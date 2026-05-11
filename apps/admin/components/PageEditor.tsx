@@ -207,7 +207,7 @@ export function PageEditor({
                   />
                 </label>
                 <label className="block">
-                  <span className="label">Slug · FR</span>
+                  <span className="label">Slug · AR</span>
                   <input
                     value={state.slugAr}
                     onChange={(e) => update('slugAr', e.target.value.toLowerCase())}

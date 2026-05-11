@@ -83,7 +83,7 @@ export function Hero({ block, locale }: { block: HeroBlock; locale: Locale }) {
       </div>
 
       <div className="absolute bottom-8 right-6 md:right-10 text-xs uppercase tracking-widest text-bone/40">
-        scroll ↓
+        {locale === 'ar' ? 'مرّر ↓' : 'scroll ↓'}
       </div>
     </section>
   );

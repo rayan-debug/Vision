@@ -191,7 +191,7 @@ export function ProjectEditor({ project }: { project: Project }) {
                 />
               </label>
               <label className="block">
-                <span className="label">Slug · FR</span>
+                <span className="label">Slug · AR</span>
                 <input
                   className="input font-mono text-xs"
                   value={s.slugAr}
