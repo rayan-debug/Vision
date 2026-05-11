@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent: #ff5a1f;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  background: #0a0a0a;
+  color: #f5f1ea;
+}
+
+::selection {
+  background: var(--accent);
+  color: #0a0a0a;
+}
+
+/* Grain overlay for that printed, tactile feel */
+.grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* Hover line for nav links */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Reveal on scroll — picked up by the IntersectionObserver helper */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal].in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Project card hover */
+.card-tilt {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-tilt:hover {
+  transform: translateY(-6px);
+}
+
+/* Hero photo frame */
+.photo-frame {
+  position: relative;
+  isolation: isolate;
+}
+.photo-frame::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 1px solid var(--accent);
+  z-index: -1;
+  transform: translate(12px, 12px);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.photo-frame:hover::before {
+  transform: translate(0, 0);
+}

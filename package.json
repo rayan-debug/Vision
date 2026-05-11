@@ -1,0 +1,23 @@
+{
+  "name": "roua-studio",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace apps/web run dev",
+    "dev:admin": "npm --workspace apps/admin run dev",
+    "build": "npm --workspace packages/db run build && npm --workspace apps/web run build && npm --workspace apps/admin run build",
+    "db:generate": "npm --workspace packages/db run generate",
+    "db:push": "npm --workspace packages/db run push",
+    "db:migrate": "npm --workspace packages/db run migrate",
+    "db:seed": "npm --workspace packages/db run seed",
+    "db:studio": "npm --workspace packages/db run studio"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "packageManager": "npm@10.9.0"
+}

@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: #fafaf8;
+  color: #0a0a0a;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #ff5a1f;
+  color: #fff;
+}
+
+/* Reset details marker so we can style our own */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.btn {
+  @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors;
+}
+.btn-primary {
+  @apply btn bg-ink text-bone hover:bg-ink-50;
+}
+.btn-accent {
+  @apply btn bg-accent text-white hover:bg-accent-dark;
+}
+.btn-outline {
+  @apply btn border border-ink/15 hover:border-ink hover:bg-surface-100;
+}
+.btn-ghost {
+  @apply btn text-muted hover:text-ink hover:bg-surface-100;
+}
+.btn-danger {
+  @apply btn text-red-700 hover:bg-red-50;
+}
+
+.input,
+.textarea,
+.select {
+  @apply w-full px-3 py-2 bg-surface border border-ink/15 focus:border-accent focus:outline-none transition-colors text-sm;
+}
+.textarea {
+  @apply font-mono leading-relaxed;
+}
+.label {
+  @apply block text-xs uppercase tracking-wider text-muted mb-1.5;
+}
+.card {
+  @apply bg-surface border border-ink/10 p-5;
+}
+.tag {
+  @apply inline-block px-2 py-0.5 text-[10px] uppercase tracking-widest border border-ink/15;
+}

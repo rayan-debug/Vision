@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+dist/
+build/
+
+# Environment files (NEVER commit secrets)
+.env
+.env.local
+.env*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Caches
+.turbo/
+.cache/
+*.tsbuildinfo
+next-env.d.ts.bak
+
+# Vercel
+.vercel/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.idea/
+.vscode/
+.claude/
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+
+# User uploads (admin saves local files here in dev; production uses Cloudinary)
+apps/web/public/uploads/*
+!apps/web/public/uploads/.gitkeep
