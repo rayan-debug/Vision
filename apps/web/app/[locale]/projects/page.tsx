@@ -10,17 +10,17 @@ export async function generateMetadata({
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const title = locale === 'fr' ? 'Réalisations — The Vision' : 'Work — The Vision';
+  const title = locale === 'ar' ? 'الأعمال — ذا فيجن' : 'Work — The Vision';
   const description =
-    locale === 'fr'
-      ? 'Sélection de projets de Roua Bou Ghanem : identité, édition, photographie, podcast et montage vidéo.'
+    locale === 'ar'
+      ? 'مختارات من أعمال روى بو غانم: هويات بصرية، تصميم تحريري، تصوير، بودكاست ومونتاج فيديو.'
       : 'Selected work by Roua Bou Ghanem — brand identity, editorial, photography, podcast, and video editing.';
   return pageMetadata({
     title,
     description,
     path: `/${locale}/projects`,
     locale,
-    alternates: { en: '/en/projects', fr: '/fr/projects' },
+    alternates: { en: '/en/projects', ar: '/ar/projects' },
   });
 }
 
@@ -43,10 +43,10 @@ export default async function ProjectsIndex({
     <>
       <section className="px-6 md:px-10 pt-40 pb-12">
         <p className="text-xs uppercase tracking-[0.3em] text-accent mb-6">
-          ◆ {locale === 'fr' ? 'Réalisations' : 'Selected work'}
+          ◆ {locale === 'ar' ? 'مختارات من الأعمال' : 'Selected work'}
         </p>
         <h1 className="font-display text-super">
-          {locale === 'fr' ? 'Le travail.' : 'The work.'}
+          {locale === 'ar' ? 'الأعمال.' : 'The work.'}
         </h1>
         {categories.length > 0 && (
           <ul className="mt-10 flex flex-wrap gap-2 text-xs uppercase tracking-widest">
@@ -65,7 +65,7 @@ export default async function ProjectsIndex({
       <section className="px-6 md:px-10 pb-32 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-16 md:gap-y-24">
         {projects.map((p, i) => {
           const meta = (p.i18n as Record<string, { title: string; description: string }>)[locale];
-          const slug = locale === 'fr' ? p.slugFr : p.slugEn;
+          const slug = locale === 'ar' ? p.slugAr : p.slugEn;
           return (
             <Link
               key={p.id}

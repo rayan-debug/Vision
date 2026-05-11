@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { LOCALES, isLocale } from '@roua/db';
+import { LOCALES, isLocale, dirFor } from '@roua/db';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 
@@ -16,12 +16,13 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  const dir = dirFor(locale);
 
   return (
-    <>
+    <div lang={locale} dir={dir}>
       <Header locale={locale} />
       <main>{children}</main>
       <Footer locale={locale} />
-    </>
+    </div>
   );
 }

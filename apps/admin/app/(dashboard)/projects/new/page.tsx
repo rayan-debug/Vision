@@ -17,9 +17,9 @@ export default function NewProject() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         titleEn: data.get('titleEn'),
-        titleFr: data.get('titleFr'),
+        titleAr: data.get('titleAr'),
         slugEn: data.get('slugEn'),
-        slugFr: data.get('slugFr'),
+        slugAr: data.get('slugAr'),
         category: data.get('category'),
       }),
     });
@@ -44,8 +44,8 @@ export default function NewProject() {
             <input name="titleEn" required className="input" />
           </label>
           <label className="block">
-            <span className="label">Title · FR</span>
-            <input name="titleFr" required className="input" />
+            <span className="label">Title · AR</span>
+            <input name="titleAr" required className="input" dir="rtl" />
           </label>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -54,8 +54,8 @@ export default function NewProject() {
             <input name="slugEn" required pattern="[a-z0-9\-]+" className="input font-mono" />
           </label>
           <label className="block">
-            <span className="label">Slug · FR</span>
-            <input name="slugFr" required pattern="[a-z0-9\-]+" className="input font-mono" />
+            <span className="label">Slug · AR</span>
+            <input name="slugAr" required pattern="[a-z0-9\-]+" className="input font-mono" />
           </label>
         </div>
         <label className="block">

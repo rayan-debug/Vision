@@ -33,8 +33,8 @@ model User {
 model Page {
   id          String     @id @default(cuid())
   slugEn      String     @unique
-  slugFr      String     @unique
-  // i18n: { en: { title, description, keywords }, fr: { ... } }
+  slugAr      String     @unique
+  // i18n: { en: { title, description, keywords }, ar: { ... } }
   i18n        Json
   blocks      Json       @default("[]")
   ogImage     String?
@@ -52,8 +52,8 @@ model Page {
 model Project {
   id          String     @id @default(cuid())
   slugEn      String     @unique
-  slugFr      String     @unique
-  // i18n: { en: { title, description, fullContent, client, role }, fr: { ... } }
+  slugAr      String     @unique
+  // i18n: { en: { title, description, fullContent, client, role }, ar: { ... } }
   i18n        Json
   category    String?
   year        Int?
@@ -73,7 +73,7 @@ model Project {
 
 model Service {
   id        String   @id @default(cuid())
-  // i18n: { en: { title, description }, fr: { ... } }
+  // i18n: { en: { title, description }, ar: { ... } }
   i18n      Json
   icon      String?
   order     Int      @default(0)
@@ -84,8 +84,8 @@ model Service {
 model BlogPost {
   id          String     @id @default(cuid())
   slugEn      String     @unique
-  slugFr      String     @unique
-  // i18n: { en: { title, excerpt, content }, fr: { ... } }
+  slugAr      String     @unique
+  // i18n: { en: { title, excerpt, content }, ar: { ... } }
   i18n        Json
   coverImage  String?
   tags        String[]
@@ -112,7 +112,7 @@ model Media {
 // Singleton: there is only ever one row (id = "singleton")
 model SiteSettings {
   id           String   @id @default("singleton")
-  // i18n: { en: { siteName, tagline, bio }, fr: { ... } }
+  // i18n: { en: { siteName, tagline, bio }, ar: { ... } }
   i18n         Json
   email        String?
   phone        String?
@@ -127,7 +127,7 @@ model SiteSettings {
   primaryColor String   @default("#0a0a0a")
   accentColor  String   @default("#ff4d1a")
   // AEO: structured FAQs that get rendered as FAQPage JSON-LD on the home page.
-  // [{ q: { en, fr }, a: { en, fr } }, ...]
+  // [{ q: { en, ar }, a: { en, ar } }, ...]
   faqs         Json     @default("[]")
   updatedAt    DateTime @updatedAt
 }

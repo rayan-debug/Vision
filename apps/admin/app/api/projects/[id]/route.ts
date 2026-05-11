@@ -9,7 +9,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const data: Record<string, unknown> = {};
   for (const k of [
     'slugEn',
-    'slugFr',
+    'slugAr',
     'i18n',
     'category',
     'tags',

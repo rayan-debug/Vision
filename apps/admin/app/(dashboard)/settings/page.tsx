@@ -7,7 +7,7 @@ export default async function Settings() {
     update: {},
     create: {
       id: 'singleton',
-      i18n: { en: { siteName: 'The Vision', tagline: '', bio: '' }, fr: { siteName: 'The Vision', tagline: '', bio: '' } },
+      i18n: { en: { siteName: 'The Vision', tagline: '', bio: '' }, ar: { siteName: 'The Vision', tagline: '', bio: '' } },
     },
   });
 

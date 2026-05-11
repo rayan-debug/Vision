@@ -6,21 +6,22 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          DEFAULT: '#0a0a0a',
+          DEFAULT: 'rgb(var(--ink-rgb) / <alpha-value>)',
           50: '#1a1a1a',
           100: '#141414',
         },
         bone: '#f5f1ea',
         accent: {
-          DEFAULT: '#ff5a1f',
-          dark: '#e34a13',
-          light: '#ff7a4d',
+          DEFAULT: 'rgb(var(--accent-rgb) / <alpha-value>)',
+          dark: 'rgb(var(--accent-dark-rgb) / <alpha-value>)',
+          light: 'rgb(var(--accent-light-rgb) / <alpha-value>)',
         },
       },
       fontFamily: {
-        display: ['var(--font-display)', 'Georgia', 'serif'],
-        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-arabic)', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)', 'var(--font-arabic)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
+        arabic: ['var(--font-arabic)', 'serif'],
       },
       fontSize: {
         'mega': ['clamp(4rem, 14vw, 14rem)', { lineHeight: '0.9', letterSpacing: '-0.04em' }],

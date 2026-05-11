@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { prisma, t, type Locale } from '@roua/db';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-const NAV_LABELS: Record<Locale, { work: string; menu: string }> = {
-  en: { work: 'Work', menu: 'Menu' },
-  fr: { work: 'Réalisations', menu: 'Menu' },
+const NAV_LABELS: Record<Locale, { work: string }> = {
+  en: { work: 'Work' },
+  ar: { work: 'الأعمال' },
 };
 
 export async function Header({ locale }: { locale: Locale }) {
@@ -13,7 +13,7 @@ export async function Header({ locale }: { locale: Locale }) {
     prisma.page.findMany({
       where: { status: 'PUBLISHED', showInNav: true, isHome: false },
       orderBy: { navOrder: 'asc' },
-      select: { slugEn: true, slugFr: true, i18n: true },
+      select: { slugEn: true, slugAr: true, i18n: true },
     }),
   ]);
 
@@ -33,7 +33,7 @@ export async function Header({ locale }: { locale: Locale }) {
           </Link>
           {pages.map((p) => {
             const meta = (p.i18n as Record<string, { title: string }>)[locale];
-            const slug = locale === 'fr' ? p.slugFr : p.slugEn;
+            const slug = locale === 'ar' ? p.slugAr : p.slugEn;
             return (
               <Link key={slug} href={`/${locale}/${slug}`} className="link-underline">
                 {meta?.title?.split('—')[0].trim() ?? slug}

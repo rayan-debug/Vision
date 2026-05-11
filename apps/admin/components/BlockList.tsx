@@ -127,7 +127,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
         <>
           <LocalizedField
             label="Eyebrow"
-            value={block.eyebrow ?? { en: '', fr: '' }}
+            value={block.eyebrow ?? { en: '', ar: '' }}
             onChange={(v) => onChange({ ...block, eyebrow: v })}
           />
           <LocalizedField
@@ -137,7 +137,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
           />
           <LocalizedField
             label="Subheading"
-            value={block.subheading ?? { en: '', fr: '' }}
+            value={block.subheading ?? { en: '', ar: '' }}
             multiline
             onChange={(v) => onChange({ ...block, subheading: v })}
           />
@@ -173,7 +173,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
         <>
           <LocalizedField
             label="Heading"
-            value={block.heading ?? { en: '', fr: '' }}
+            value={block.heading ?? { en: '', ar: '' }}
             onChange={(v) => onChange({ ...block, heading: v })}
           />
           <LocalizedField
@@ -207,7 +207,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
           <LocalizedField label="Alt text" value={block.alt} onChange={(v) => onChange({ ...block, alt: v })} />
           <LocalizedField
             label="Caption"
-            value={block.caption ?? { en: '', fr: '' }}
+            value={block.caption ?? { en: '', ar: '' }}
             onChange={(v) => onChange({ ...block, caption: v })}
           />
           <label className="block">
@@ -230,7 +230,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
         <>
           <LocalizedField
             label="Heading"
-            value={block.heading ?? { en: '', fr: '' }}
+            value={block.heading ?? { en: '', ar: '' }}
             onChange={(v) => onChange({ ...block, heading: v })}
           />
           <div className="grid grid-cols-2 gap-3">
@@ -267,7 +267,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
       return (
         <LocalizedField
           label="Heading"
-          value={block.heading ?? { en: '', fr: '' }}
+          value={block.heading ?? { en: '', ar: '' }}
           onChange={(v) => onChange({ ...block, heading: v })}
         />
       );
@@ -277,14 +277,14 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
         <>
           <LocalizedField
             label="Heading"
-            value={block.heading ?? { en: '', fr: '' }}
+            value={block.heading ?? { en: '', ar: '' }}
             onChange={(v) => onChange({ ...block, heading: v })}
           />
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="label mb-0">Q&A items</span>
               <button
-                onClick={() => onChange({ ...block, items: [...block.items, { q: { en: '', fr: '' }, a: { en: '', fr: '' } }] })}
+                onClick={() => onChange({ ...block, items: [...block.items, { q: { en: '', ar: '' }, a: { en: '', ar: '' } }] })}
                 className="btn-ghost text-xs"
               >
                 + Add
@@ -328,7 +328,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
           <LocalizedField label="Heading" value={block.heading} onChange={(v) => onChange({ ...block, heading: v })} />
           <LocalizedField
             label="Subheading"
-            value={block.subheading ?? { en: '', fr: '' }}
+            value={block.subheading ?? { en: '', ar: '' }}
             multiline
             onChange={(v) => onChange({ ...block, subheading: v })}
           />
@@ -367,7 +367,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
         <>
           <LocalizedField
             label="Heading"
-            value={block.heading ?? { en: '', fr: '' }}
+            value={block.heading ?? { en: '', ar: '' }}
             onChange={(v) => onChange({ ...block, heading: v })}
           />
           <label className="block">
@@ -386,7 +386,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
             <div className="flex items-center justify-between mb-2">
               <span className="label mb-0">Images</span>
               <button
-                onClick={() => onChange({ ...block, images: [...block.images, { src: '', alt: { en: '', fr: '' } }] })}
+                onClick={() => onChange({ ...block, images: [...block.images, { src: '', alt: { en: '', ar: '' } }] })}
                 className="btn-ghost text-xs"
               >
                 + Add
@@ -435,7 +435,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
       return (
         <LocalizedField
           label="Heading"
-          value={block.heading ?? { en: '', fr: '' }}
+          value={block.heading ?? { en: '', ar: '' }}
           onChange={(v) => onChange({ ...block, heading: v })}
         />
       );
@@ -501,14 +501,14 @@ function CtaEditor({
     return (
       <button
         type="button"
-        onClick={() => onChange({ label: { en: '', fr: '' }, href: '' })}
+        onClick={() => onChange({ label: { en: '', ar: '' }, href: '' })}
         className="btn-ghost text-xs"
       >
         + Add call to action
       </button>
     );
   }
-  const c = cta ?? { label: { en: '', fr: '' }, href: '' };
+  const c = cta ?? { label: { en: '', ar: '' }, href: '' };
   return (
     <div className="border-l-2 border-accent pl-3 space-y-3">
       <LocalizedField
@@ -535,7 +535,7 @@ function CtaEditor({
 
 function defaultBlock(type: BlockType): Block {
   const id = randomId();
-  const emptyLoc = { en: '', fr: '' };
+  const emptyLoc = { en: '', ar: '' };
   switch (type) {
     case 'hero':
       return { id, type, heading: emptyLoc, variant: 'fullscreen' };

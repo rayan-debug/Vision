@@ -27,7 +27,7 @@ export async function PATCH(req: Request) {
   await prisma.siteSettings.upsert({
     where: { id: 'singleton' },
     update: data,
-    create: { id: 'singleton', i18n: body.i18n ?? { en: { siteName: '' }, fr: { siteName: '' } }, ...data },
+    create: { id: 'singleton', i18n: body.i18n ?? { en: { siteName: '' }, ar: { siteName: '' } }, ...data },
   });
   return NextResponse.json({ ok: true });
 }

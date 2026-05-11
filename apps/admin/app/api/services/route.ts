@@ -9,7 +9,7 @@ export async function POST() {
     data: {
       icon: '◇',
       order: count,
-      i18n: { en: { title: '', description: '' }, fr: { title: '', description: '' } },
+      i18n: { en: { title: '', description: '' }, ar: { title: '', description: '' } },
     },
   });
   return NextResponse.json({ id: s.id });

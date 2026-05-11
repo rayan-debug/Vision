@@ -8,7 +8,7 @@ type Meta = { title: string; description: string; fullContent?: string; client?:
 type Project = {
   id: string;
   slugEn: string;
-  slugFr: string;
+  slugAr: string;
   i18n: Record<string, Meta>;
   category: string | null;
   year: number | null;
@@ -45,7 +45,7 @@ export function ProjectEditor({ project }: { project: Project }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         slugEn: s.slugEn,
-        slugFr: s.slugFr,
+        slugAr: s.slugAr,
         i18n: s.i18n,
         category: s.category,
         year: s.year,
@@ -194,8 +194,8 @@ export function ProjectEditor({ project }: { project: Project }) {
                 <span className="label">Slug · FR</span>
                 <input
                   className="input font-mono text-xs"
-                  value={s.slugFr}
-                  onChange={(e) => u('slugFr', e.target.value.toLowerCase())}
+                  value={s.slugAr}
+                  onChange={(e) => u('slugAr', e.target.value.toLowerCase())}
                 />
               </label>
             </div>

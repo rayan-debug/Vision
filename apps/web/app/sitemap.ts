@@ -3,6 +3,14 @@ import { prisma, LOCALES, type Locale } from '@roua/db';
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
+function bcp47(loc: Locale): string {
+  return loc === 'ar' ? 'ar' : 'en-US';
+}
+
+function slugForLocale(locale: Locale, slugEn: string, slugAr: string): string {
+  return locale === 'ar' ? slugAr : slugEn;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [pages, projects] = await Promise.all([
     prisma.page.findMany({ where: { status: 'PUBLISHED' } }),
@@ -31,7 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const p of pages) {
     if (p.isHome) continue;
     for (const locale of LOCALES) {
-      const slug = locale === 'fr' ? p.slugFr : p.slugEn;
+      const slug = slugForLocale(locale, p.slugEn, p.slugAr);
       entries.push({
         url: `${BASE}/${locale}/${slug}`,
         lastModified: p.updatedAt,
@@ -39,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
         alternates: {
           languages: altMap(LOCALES, (l) =>
-            `${BASE}/${l}/${l === 'fr' ? p.slugFr : p.slugEn}`
+            `${BASE}/${l}/${slugForLocale(l, p.slugEn, p.slugAr)}`
           ),
         },
       });
@@ -48,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const project of projects) {
     for (const locale of LOCALES) {
-      const slug = locale === 'fr' ? project.slugFr : project.slugEn;
+      const slug = slugForLocale(locale, project.slugEn, project.slugAr);
       entries.push({
         url: `${BASE}/${locale}/projects/${slug}`,
         lastModified: project.updatedAt,
@@ -56,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
         alternates: {
           languages: altMap(LOCALES, (l) =>
-            `${BASE}/${l}/projects/${l === 'fr' ? project.slugFr : project.slugEn}`
+            `${BASE}/${l}/projects/${slugForLocale(l, project.slugEn, project.slugAr)}`
           ),
         },
       });
@@ -68,6 +76,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 function altMap(locales: readonly Locale[], make: (l: Locale) => string) {
   const out: Record<string, string> = {};
-  for (const l of locales) out[l === 'fr' ? 'fr-FR' : 'en-US'] = make(l);
+  for (const l of locales) out[bcp47(l)] = make(l);
   return out;
 }

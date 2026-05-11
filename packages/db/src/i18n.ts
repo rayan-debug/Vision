@@ -1,13 +1,25 @@
 // Single source of truth for supported locales. Change this array to add,
 // remove, or rename languages — both apps and the schema pick it up.
-export const LOCALES = ['en', 'fr'] as const;
+export const LOCALES = ['en', 'ar'] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: 'English',
-  fr: 'Français',
+  ar: 'العربية',
 };
+
+// Locales that render right-to-left. Used to set the `dir` attribute on
+// <html> and to flip a few directional UI elements.
+export const RTL_LOCALES: readonly Locale[] = ['ar'];
+
+export function isRtl(locale: Locale): boolean {
+  return RTL_LOCALES.includes(locale);
+}
+
+export function dirFor(locale: Locale): 'rtl' | 'ltr' {
+  return isRtl(locale) ? 'rtl' : 'ltr';
+}
 
 export function isLocale(value: string): value is Locale {
   return (LOCALES as readonly string[]).includes(value);

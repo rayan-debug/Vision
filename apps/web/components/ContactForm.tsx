@@ -15,14 +15,14 @@ const COPY: Record<
     error: 'Something went wrong. Try again or email directly.',
     sending: 'Sending…',
   },
-  fr: {
-    name: 'Votre nom',
-    email: 'E-mail',
-    message: 'Parlez-moi de votre projet',
-    send: 'Envoyer le brief →',
-    sent: 'Merci — message bien reçu. Réponse sous deux jours ouvrés.',
-    error: 'Erreur. Réessayez ou écrivez directement par e-mail.',
-    sending: 'Envoi…',
+  ar: {
+    name: 'الاسم',
+    email: 'البريد الإلكتروني',
+    message: 'حدّثني عن مشروعك',
+    send: 'إرسال الملخّص →',
+    sent: 'شكراً — استلمت رسالتك. سأرد خلال يومَي عمل.',
+    error: 'حدث خطأ. حاول مجدّداً أو راسلني مباشرة عبر البريد.',
+    sending: 'جارٍ الإرسال…',
   },
 };
 

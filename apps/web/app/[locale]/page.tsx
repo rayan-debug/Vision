@@ -30,7 +30,7 @@ export async function generateMetadata({
     path: `/${locale}`,
     locale,
     ogImage: page.ogImage ?? undefined,
-    alternates: { en: '/en', fr: '/fr' },
+    alternates: { en: '/en', ar: '/ar' },
   });
 }
 
@@ -69,7 +69,7 @@ export default async function HomePage({
         data={[
           personLd({
             name: 'Roua Bou Ghanem',
-            jobTitle: locale === 'fr' ? 'Graphiste' : 'Graphic Designer',
+            jobTitle: locale === 'ar' ? 'مصمّمة جرافيك' : 'Graphic Designer',
             url: `${baseUrl}/${locale}`,
             description: bio,
             sameAs: socials,

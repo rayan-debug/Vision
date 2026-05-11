@@ -162,7 +162,7 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
           </div>
         ))}
         <button
-          onClick={() => u('faqs', [...s.faqs, { q: { en: '', fr: '' }, a: { en: '', fr: '' } }])}
+          onClick={() => u('faqs', [...s.faqs, { q: { en: '', ar: '' }, a: { en: '', ar: '' } }])}
           className="btn-ghost text-xs"
         >
           + Add FAQ

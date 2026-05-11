@@ -17,9 +17,9 @@ export default function NewPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         titleEn: data.get('titleEn'),
-        titleFr: data.get('titleFr'),
+        titleAr: data.get('titleAr'),
         slugEn: data.get('slugEn'),
-        slugFr: data.get('slugFr'),
+        slugAr: data.get('slugAr'),
       }),
     });
     setBusy(false);
@@ -44,8 +44,8 @@ export default function NewPage() {
             <input name="titleEn" required className="input" placeholder="About" />
           </label>
           <label className="block">
-            <span className="label">Title · Français</span>
-            <input name="titleFr" required className="input" placeholder="À propos" />
+            <span className="label">Title · العربية</span>
+            <input name="titleAr" required className="input" placeholder="من نحن" dir="rtl" />
           </label>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -60,14 +60,17 @@ export default function NewPage() {
             />
           </label>
           <label className="block">
-            <span className="label">Slug · Français</span>
+            <span className="label">Slug · العربية</span>
             <input
-              name="slugFr"
+              name="slugAr"
               required
               pattern="[a-z0-9\-]+"
               className="input font-mono"
-              placeholder="a-propos"
+              placeholder="about"
             />
+            <span className="text-[10px] text-muted mt-1 block">
+              URLs must be ASCII — use a latin slug even for the Arabic page.
+            </span>
           </label>
         </div>
 

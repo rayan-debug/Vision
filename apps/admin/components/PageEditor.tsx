@@ -10,7 +10,7 @@ type Meta = { title: string; description?: string; keywords?: string };
 type Page = {
   id: string;
   slugEn: string;
-  slugFr: string;
+  slugAr: string;
   i18n: Record<string, Meta>;
   blocks: unknown[];
   status: 'DRAFT' | 'PUBLISHED';
@@ -61,7 +61,7 @@ export function PageEditor({
     setError(null);
     const payload = {
       slugEn: state.slugEn,
-      slugFr: state.slugFr,
+      slugAr: state.slugAr,
       i18n: state.i18n,
       blocks: state.blocks,
       showInNav: state.showInNav,
@@ -209,8 +209,8 @@ export function PageEditor({
                 <label className="block">
                   <span className="label">Slug · FR</span>
                   <input
-                    value={state.slugFr}
-                    onChange={(e) => update('slugFr', e.target.value.toLowerCase())}
+                    value={state.slugAr}
+                    onChange={(e) => update('slugAr', e.target.value.toLowerCase())}
                     className="input font-mono"
                   />
                 </label>

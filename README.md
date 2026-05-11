@@ -11,14 +11,14 @@ roua/
     └── db/       Shared Prisma schema + client
 ```
 
-The two apps deploy independently on Vercel, pointed at the same Neon database. The admin app builds pages from typed content blocks, supports drafts with live preview against the public site, and manages projects, services, media, and global settings — all in EN/FR.
+The two apps deploy independently on Vercel, pointed at the same Neon database. The admin app builds pages from typed content blocks, supports drafts with live preview against the public site, and manages projects, services, media, and global settings — all in EN/AR.
 
 ---
 
 ## What's inside
 
 ### Public site (`apps/web`, port 3000)
-- Bilingual EN/FR with localized slugs (`/en/about`, `/fr/a-propos`)
+- Bilingual EN/AR with localized slugs (`/en/about`, `/ar/about`), RTL layout when the Arabic locale is active
 - Locale auto-detected from `Accept-Language` and remembered via cookie
 - Dark + orange creative aesthetic with serif display type, grain overlay, scroll-triggered reveals, photo-frame hover, marquee
 - Server-rendered pages built from DB content blocks (`Hero`, `Text`, `Image`, `Gallery`, `Projects`, `Services`, `FAQ`, `Contact`, `CTA`, `Marquee`, `Spacer`)
@@ -43,8 +43,8 @@ The two apps deploy independently on Vercel, pointed at the same Neon database. 
 
 ### Shared DB (`packages/db`)
 - `User`, `Page`, `Project`, `Service`, `BlogPost`, `Media`, `SiteSettings`
-- All translatable content stored as `{ en: "…", fr: "…" }` JSON; slugs are separate columns for uniqueness
-- `LOCALES = ['en', 'fr']` is a single constant — change it in `src/i18n.ts` and the schema picks it up
+- All translatable content stored as `{ en: "…", ar: "…" }` JSON; slugs are separate columns for uniqueness
+- `LOCALES = ['en', 'ar']` is a single constant — change it in `src/i18n.ts` and the schema picks it up
 
 ---
 

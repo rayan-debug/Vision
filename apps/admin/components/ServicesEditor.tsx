@@ -40,7 +40,7 @@ export function ServicesEditor({ services: initial }: { services: Service[] }) {
   async function create() {
     const res = await fetch('/api/services', { method: 'POST' });
     const json = await res.json();
-    setList((l) => [...l, { id: json.id, icon: '◇', order: l.length, i18n: { en: { title: '', description: '' }, fr: { title: '', description: '' } } }]);
+    setList((l) => [...l, { id: json.id, icon: '◇', order: l.length, i18n: { en: { title: '', description: '' }, ar: { title: '', description: '' } } }]);
     router.refresh();
   }
 

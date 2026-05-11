@@ -12,7 +12,7 @@ export default async function EditPage({ params }: { params: Promise<{ id: strin
       page={{
         id: page.id,
         slugEn: page.slugEn,
-        slugFr: page.slugFr,
+        slugAr: page.slugAr,
         i18n: page.i18n as Record<string, { title: string; description?: string; keywords?: string }>,
         blocks: (page.blocks as unknown as { type: string }[]) ?? [],
         status: page.status,

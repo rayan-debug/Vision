@@ -6,6 +6,14 @@ export function siteUrl(path = ''): string {
   return new URL(path, base).toString();
 }
 
+function bcp47(locale: Locale): string {
+  return locale === 'ar' ? 'ar' : 'en-US';
+}
+
+function ogLocale(locale: Locale): string {
+  return locale === 'ar' ? 'ar_AR' : 'en_US';
+}
+
 export function pageMetadata(opts: {
   title: string;
   description?: string;
@@ -19,7 +27,7 @@ export function pageMetadata(opts: {
   const languages: Record<string, string> = {};
   if (opts.alternates) {
     for (const [loc, p] of Object.entries(opts.alternates)) {
-      if (p) languages[loc === 'fr' ? 'fr-FR' : 'en-US'] = siteUrl(p);
+      if (p) languages[bcp47(loc as Locale)] = siteUrl(p);
     }
   }
   return {
@@ -31,7 +39,7 @@ export function pageMetadata(opts: {
       title: opts.title,
       description: opts.description,
       url,
-      locale: opts.locale === 'fr' ? 'fr_FR' : 'en_US',
+      locale: ogLocale(opts.locale),
       images: opts.ogImage ? [{ url: opts.ogImage }] : [],
     },
     twitter: {

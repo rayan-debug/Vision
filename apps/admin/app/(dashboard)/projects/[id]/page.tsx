@@ -11,7 +11,7 @@ export default async function EditProject({ params }: { params: Promise<{ id: st
       project={{
         id: project.id,
         slugEn: project.slugEn,
-        slugFr: project.slugFr,
+        slugAr: project.slugAr,
         i18n: project.i18n as Record<string, { title: string; description: string; fullContent?: string; client?: string; role?: string }>,
         category: project.category,
         year: project.year,

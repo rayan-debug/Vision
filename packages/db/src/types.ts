@@ -1,6 +1,6 @@
 import type { Locale } from './i18n';
 
-// A localized string field is stored in the DB as JSON `{ en: "...", fr: "..." }`.
+// A localized string field is stored in the DB as JSON `{ en: "...", ar: "..." }`.
 export type LocalizedString = Record<Locale, string>;
 
 // ----- Page block schema -----

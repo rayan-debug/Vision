@@ -9,7 +9,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const data: Record<string, unknown> = {};
   if (typeof body.slugEn === 'string') data.slugEn = body.slugEn.trim().toLowerCase();
-  if (typeof body.slugFr === 'string') data.slugFr = body.slugFr.trim().toLowerCase();
+  if (typeof body.slugAr === 'string') data.slugAr = body.slugAr.trim().toLowerCase();
   if (body.i18n) data.i18n = body.i18n;
   if (Array.isArray(body.blocks)) data.blocks = body.blocks;
   if (typeof body.ogImage === 'string') data.ogImage = body.ogImage;

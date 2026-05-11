@@ -6,7 +6,7 @@ import { JsonLd, creativeWorkLd, breadcrumbLd } from '@/lib/jsonld';
 
 async function findProject(slug: string) {
   return prisma.project.findFirst({
-    where: { status: 'PUBLISHED', OR: [{ slugEn: slug }, { slugFr: slug }] },
+    where: { status: 'PUBLISHED', OR: [{ slugEn: slug }, { slugAr: slug }] },
   });
 }
 
@@ -30,7 +30,7 @@ export async function generateMetadata({
     ogImage: project.coverImage,
     alternates: {
       en: `/en/projects/${project.slugEn}`,
-      fr: `/fr/projects/${project.slugFr}`,
+      ar: `/ar/projects/${project.slugAr}`,
     },
   });
 }
@@ -74,7 +74,7 @@ export default async function ProjectDetail({
           }),
           breadcrumbLd([
             { name: 'Home', url: `${baseUrl}/${locale}` },
-            { name: locale === 'fr' ? 'Réalisations' : 'Work', url: `${baseUrl}/${locale}/projects` },
+            { name: locale === 'ar' ? 'الأعمال' : 'Work', url: `${baseUrl}/${locale}/projects` },
             { name: meta?.title ?? slug, url },
           ]),
         ]}
@@ -92,7 +92,7 @@ export default async function ProjectDetail({
             {meta?.client && (
               <div>
                 <dt className="text-xs uppercase tracking-widest text-bone/40 mb-1">
-                  {locale === 'fr' ? 'Client' : 'Client'}
+                  {locale === 'ar' ? 'العميل' : 'Client'}
                 </dt>
                 <dd>{meta.client}</dd>
               </div>
@@ -100,7 +100,7 @@ export default async function ProjectDetail({
             {meta?.role && (
               <div>
                 <dt className="text-xs uppercase tracking-widest text-bone/40 mb-1">
-                  {locale === 'fr' ? 'Rôle' : 'Role'}
+                  {locale === 'ar' ? 'الدور' : 'Role'}
                 </dt>
                 <dd>{meta.role}</dd>
               </div>
@@ -108,7 +108,7 @@ export default async function ProjectDetail({
             {project.year && (
               <div>
                 <dt className="text-xs uppercase tracking-widest text-bone/40 mb-1">
-                  {locale === 'fr' ? 'Année' : 'Year'}
+                  {locale === 'ar' ? 'السنة' : 'Year'}
                 </dt>
                 <dd>{project.year}</dd>
               </div>
@@ -145,10 +145,10 @@ export default async function ProjectDetail({
         {next && (
           <section className="px-6 md:px-10 py-24 border-t border-bone/10">
             <p className="text-xs uppercase tracking-[0.3em] text-bone/40 mb-4">
-              {locale === 'fr' ? 'Projet suivant' : 'Next project'}
+              {locale === 'ar' ? 'المشروع التالي' : 'Next project'}
             </p>
             <Link
-              href={`/${locale}/projects/${locale === 'fr' ? next.slugFr : next.slugEn}`}
+              href={`/${locale}/projects/${locale === 'ar' ? next.slugAr : next.slugEn}`}
               className="font-display text-super hover:text-accent transition-colors"
             >
               {(next.i18n as Record<Locale, Meta>)[locale]?.title} →

@@ -6,14 +6,14 @@ export async function POST(req: Request) {
   await requireSession();
   const body = await req.json();
   const titleEn = String(body.titleEn ?? '').trim();
-  const titleFr = String(body.titleFr ?? '').trim();
+  const titleAr = String(body.titleAr ?? '').trim();
   const slugEn = String(body.slugEn ?? '').trim().toLowerCase();
-  const slugFr = String(body.slugFr ?? '').trim().toLowerCase();
+  const slugAr = String(body.slugAr ?? '').trim().toLowerCase();
 
-  if (!titleEn || !titleFr || !slugEn || !slugFr) {
+  if (!titleEn || !titleAr || !slugEn || !slugAr) {
     return NextResponse.json({ error: 'All fields required.' }, { status: 400 });
   }
-  if (!/^[a-z0-9-]+$/.test(slugEn) || !/^[a-z0-9-]+$/.test(slugFr)) {
+  if (!/^[a-z0-9-]+$/.test(slugEn) || !/^[a-z0-9-]+$/.test(slugAr)) {
     return NextResponse.json({ error: 'Slugs must be lowercase letters, numbers, and dashes.' }, { status: 400 });
   }
 
@@ -21,10 +21,10 @@ export async function POST(req: Request) {
     const page = await prisma.page.create({
       data: {
         slugEn,
-        slugFr,
+        slugAr,
         i18n: {
           en: { title: titleEn, description: '', keywords: '' },
-          fr: { title: titleFr, description: '', keywords: '' },
+          ar: { title: titleAr, description: '', keywords: '' },
         },
         blocks: [],
         status: 'DRAFT',

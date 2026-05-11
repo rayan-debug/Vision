@@ -4,11 +4,11 @@ import { BlockRenderer } from '@/components/blocks/BlockRenderer';
 import { pageMetadata } from '@/lib/seo';
 import { JsonLd, breadcrumbLd } from '@/lib/jsonld';
 
-async function findPage(locale: Locale, slug: string) {
+async function findPage(slug: string) {
   return prisma.page.findFirst({
     where: {
       status: 'PUBLISHED',
-      OR: [{ slugEn: slug }, { slugFr: slug }],
+      OR: [{ slugEn: slug }, { slugAr: slug }],
     },
   });
 }
@@ -20,7 +20,7 @@ export async function generateMetadata({
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
-  const page = await findPage(locale, slug);
+  const page = await findPage(slug);
   if (!page) return {};
   const meta = (page.i18n as Record<string, { title: string; description?: string; keywords?: string }>)[
     locale
@@ -32,7 +32,7 @@ export async function generateMetadata({
     path: `/${locale}/${slug}`,
     locale,
     ogImage: page.ogImage ?? undefined,
-    alternates: { en: `/en/${page.slugEn}`, fr: `/fr/${page.slugFr}` },
+    alternates: { en: `/en/${page.slugEn}`, ar: `/ar/${page.slugAr}` },
   });
 }
 
@@ -44,12 +44,12 @@ export default async function DynamicPage({
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
 
-  const page = await findPage(locale, slug);
+  const page = await findPage(slug);
   if (!page || page.isHome) notFound();
 
   const blocks = (page.blocks as unknown as Block[]) ?? [];
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-  const meta = (page.i18n as Record<string, { title: string }>)[locale];
+  const meta = (page.i18n as Record<string, { title: string }>)[locale as Locale];
 
   return (
     <>

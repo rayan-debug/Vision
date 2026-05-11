@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --accent: #ff5a1f;
+  --ink-rgb: 10 10 10;
+  --accent-rgb: 255 90 31;
+  --accent-dark-rgb: 227 74 19;
+  --accent-light-rgb: 255 122 77;
+  --accent: rgb(var(--accent-rgb));
 }
 
 * {
@@ -13,7 +17,7 @@
 
 html,
 body {
-  background: #0a0a0a;
+  background: rgb(var(--ink-rgb));
   color: #f5f1ea;
 }
 

@@ -113,6 +113,6 @@ export function JsonLd({ data }: { data: Json | Json[] }) {
   );
 }
 
-export function localeLabel(locale: Locale): 'en-US' | 'fr-FR' {
-  return locale === 'fr' ? 'fr-FR' : 'en-US';
+export function localeLabel(locale: Locale): 'en-US' | 'ar' {
+  return locale === 'ar' ? 'ar' : 'en-US';
 }

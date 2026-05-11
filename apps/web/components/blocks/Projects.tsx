@@ -32,7 +32,7 @@ export async function Projects({
             href={`/${locale}/projects`}
             className="text-xs uppercase tracking-widest link-underline"
           >
-            {locale === 'fr' ? 'Tout voir ↗' : 'See all ↗'}
+            {locale === 'ar' ? 'عرض الكل ↗' : 'See all ↗'}
           </Link>
         </div>
       )}
@@ -40,7 +40,7 @@ export async function Projects({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-16 md:gap-y-24">
         {projects.map((p, i) => {
           const meta = (p.i18n as Record<string, { title: string; description: string }>)[locale];
-          const slug = locale === 'fr' ? p.slugFr : p.slugEn;
+          const slug = locale === 'ar' ? p.slugAr : p.slugEn;
           const offset = i % 2 === 1 ? 'md:mt-24' : '';
           return (
             <Link
