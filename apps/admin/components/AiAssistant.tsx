@@ -108,6 +108,7 @@ function GeneratePagePanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<Block[] | null>(null);
+  const [confirmReplace, setConfirmReplace] = useState(false);
 
   async function run() {
     setBusy(true);
@@ -160,20 +161,27 @@ function GeneratePagePanel({
             ))}
           </ol>
           <div className="flex gap-2 pt-2">
-            <button onClick={() => { onAppend(preview); setPreview(null); }} className="btn-outline text-xs flex-1">
+            <button
+              onClick={() => { onAppend(preview); setPreview(null); setConfirmReplace(false); }}
+              className="btn-outline text-xs flex-1"
+            >
               Append to page
             </button>
             {canReplace && (
               <button
                 onClick={() => {
-                  if (confirm('Replace all current blocks with these?')) {
-                    onReplace(preview);
-                    setPreview(null);
+                  if (!confirmReplace) {
+                    setConfirmReplace(true);
+                    return;
                   }
+                  onReplace(preview);
+                  setPreview(null);
+                  setConfirmReplace(false);
                 }}
-                className="btn-accent text-xs flex-1"
+                onBlur={() => setConfirmReplace(false)}
+                className={`text-xs flex-1 ${confirmReplace ? 'btn-danger' : 'btn-accent'}`}
               >
-                Replace all
+                {confirmReplace ? 'Click again to confirm' : 'Replace all'}
               </button>
             )}
           </div>
