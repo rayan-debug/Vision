@@ -79,7 +79,7 @@ export function PagesList({ initial }: { initial: Row[] }) {
       </div>
 
       <div className="border border-ink/10 bg-surface">
-        <div className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-ink/10 text-xs uppercase tracking-widest text-muted">
+        <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 border-b border-ink/10 text-xs uppercase tracking-widest text-muted">
           <div className="col-span-5">Title</div>
           <div className="col-span-2">Slug</div>
           <div className="col-span-2">Status</div>
@@ -89,20 +89,21 @@ export function PagesList({ initial }: { initial: Row[] }) {
         {filtered.map((p) => (
           <div
             key={p.id}
-            className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-ink/10 last:border-b-0 hover:bg-surface-100 transition-colors items-center"
+            className="flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 px-4 py-3 border-b border-ink/10 last:border-b-0 hover:bg-surface-100 transition-colors md:items-center"
           >
-            <Link href={`/pages/${p.id}`} className="col-span-5 flex items-center gap-2 min-w-0">
+            <Link href={`/pages/${p.id}`} className="md:col-span-5 flex items-center gap-2 min-w-0">
               {p.isHome && <span className="text-accent text-xs shrink-0">★</span>}
               <span className="font-medium truncate">{p.title || p.slugEn}</span>
             </Link>
-            <div className="col-span-2 text-muted text-sm font-mono truncate">/{p.slugEn}</div>
-            <div className="col-span-2">
+            <div className="md:col-span-2 text-muted text-sm font-mono truncate">/{p.slugEn}</div>
+            <div className="md:col-span-2 flex items-center gap-2">
               <span className={p.status === 'PUBLISHED' ? 'tag border-accent text-accent' : 'tag text-muted'}>
                 {p.status}
               </span>
+              <span className="md:hidden text-[10px] text-muted">{new Date(p.updatedAt).toLocaleDateString()}</span>
             </div>
-            <div className="col-span-2 text-xs text-muted">{new Date(p.updatedAt).toLocaleDateString()}</div>
-            <div className="col-span-1 flex justify-end gap-1">
+            <div className="hidden md:block md:col-span-2 text-xs text-muted">{new Date(p.updatedAt).toLocaleDateString()}</div>
+            <div className="md:col-span-1 flex justify-start md:justify-end gap-1">
               <button
                 onClick={() => duplicate(p.id)}
                 disabled={busyId === p.id}

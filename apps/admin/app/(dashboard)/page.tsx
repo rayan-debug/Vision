@@ -33,13 +33,28 @@ export default async function Dashboard() {
   ];
 
   return (
-    <div className="p-8 md:p-12 max-w-6xl">
-      <div className="mb-12">
-        <p className="text-xs uppercase tracking-widest text-accent mb-3">Studio</p>
-        <h1 className="font-display text-5xl">Welcome back.</h1>
+    <div className="p-4 md:p-8 lg:p-12 max-w-6xl">
+      <div className="mb-8 md:mb-12">
+        <p className="text-xs uppercase tracking-widest text-accent mb-2 md:mb-3">Studio</p>
+        <h1 className="font-display text-3xl md:text-5xl">Welcome back.</h1>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-12">
+      <details className="card mb-8 md:mb-12">
+        <summary className="cursor-pointer text-sm font-medium hover:text-accent select-none">
+          What edits where? — a 30-second tour
+        </summary>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm leading-relaxed text-muted">
+          <p><strong className="text-ink">Pages</strong> — every public URL like <code className="text-xs">/about</code> or <code className="text-xs">/services</code>. Built from drag-orderable blocks. Pick a layout template when creating one.</p>
+          <p><strong className="text-ink">Projects</strong> — portfolio items shown in the Projects grid block and on <code className="text-xs">/projects</code>. Mark as featured to surface on the home page.</p>
+          <p><strong className="text-ink">Services</strong> — what you do. Shows in the Services block on any page.</p>
+          <p><strong className="text-ink">Testimonials</strong> — client quotes. Shows via the Testimonials block on any page.</p>
+          <p><strong className="text-ink">Media</strong> — uploaded images. Reuse via the picker on any image field.</p>
+          <p><strong className="text-ink">Inquiries</strong> — messages from the public contact form. Read, reply (mailto), archive.</p>
+          <p className="md:col-span-2"><strong className="text-ink">Site settings</strong> — site-wide brand, theme colors, fonts, navigation labels, SEO defaults, analytics, custom CSS. Every page picks up changes immediately on save.</p>
+        </div>
+      </details>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8 md:mb-12">
         {stats.map((s) => (
           <Link
             key={s.label}
@@ -47,7 +62,7 @@ export default async function Dashboard() {
             className={`card hover:border-accent transition-colors ${s.highlight ? 'border-accent' : ''}`}
           >
             <p className="text-xs uppercase tracking-widest text-muted">{s.label}</p>
-            <p className={`font-display text-4xl mt-2 ${s.highlight ? 'text-accent' : ''}`}>{s.value}</p>
+            <p className={`font-display text-3xl md:text-4xl mt-2 ${s.highlight ? 'text-accent' : ''}`}>{s.value}</p>
           </Link>
         ))}
       </div>
@@ -122,14 +137,17 @@ export default async function Dashboard() {
               <Link
                 key={i.id}
                 href="/inquiries"
-                className="grid grid-cols-12 gap-3 px-4 py-3 hover:bg-surface-100 transition-colors items-center"
+                className="flex flex-col gap-1 md:grid md:grid-cols-12 md:gap-3 px-4 py-3 hover:bg-surface-100 transition-colors md:items-center"
               >
-                <div className="col-span-3 flex items-center gap-2">
+                <div className="md:col-span-3 flex items-center gap-2 min-w-0">
                   {i.status === 'NEW' && <span className="w-2 h-2 rounded-full bg-accent shrink-0" />}
                   <span className="font-medium truncate">{i.name}</span>
+                  <span className="md:hidden ml-auto text-[10px] text-muted">
+                    {new Date(i.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
-                <div className="col-span-7 text-sm text-muted truncate">{i.message}</div>
-                <div className="col-span-2 text-right text-xs text-muted">
+                <div className="md:col-span-7 text-sm text-muted truncate">{i.message}</div>
+                <div className="hidden md:block md:col-span-2 text-right text-xs text-muted">
                   {new Date(i.createdAt).toLocaleDateString()}
                 </div>
               </Link>

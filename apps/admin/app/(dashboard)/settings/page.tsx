@@ -12,10 +12,10 @@ export default async function Settings() {
   });
 
   return (
-    <div className="p-8 md:p-12 max-w-5xl">
+    <div className="p-4 md:p-8 lg:p-12 max-w-5xl">
       <p className="text-xs uppercase tracking-widest text-accent mb-2">Studio</p>
-      <h1 className="font-display text-5xl mb-2">Site settings</h1>
-      <p className="text-muted mb-10">
+      <h1 className="font-display text-3xl md:text-5xl mb-2">Site settings</h1>
+      <p className="text-muted mb-8 md:mb-10">
         Global brand information, theme, analytics, SEO defaults, and FAQs. Every change is live the moment you save.
       </p>
       <SettingsEditor

@@ -1,13 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { randomId } from '@/lib/id';
-import { LOCALES, type Block, type BlockType, type Locale } from '@roua/db';
+import { LOCALES, PAGE_TEMPLATES, type Block, type BlockType, type Locale } from '@roua/db';
 import { MediaPicker } from './MediaPicker';
 
 type Props = {
   blocks: Block[];
   onChange: (blocks: Block[]) => void;
-  blockTypes: { type: BlockType; label: string }[];
+  blockTypes: { type: BlockType; label: string; description: string }[];
 };
 
 export function BlockList({ blocks, onChange, blockTypes }: Props) {
@@ -56,6 +56,25 @@ export function BlockList({ blocks, onChange, blockTypes }: Props) {
         />
       ))}
 
+      {blocks.length === 0 && !adding && (
+        <div className="border border-dashed border-ink/15 bg-surface p-5">
+          <p className="text-xs uppercase tracking-widest text-muted mb-3">Start from a template</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {PAGE_TEMPLATES.filter((t) => t.id !== 'blank').map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => onChange(t.build())}
+                className="text-left border border-ink/10 hover:border-accent hover:bg-surface-100 transition-colors p-3"
+              >
+                <p className="font-medium text-sm">{t.name}</p>
+                <p className="text-[11px] text-muted leading-snug mt-0.5">{t.description}</p>
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-muted mt-3">…or build it block by block:</p>
+        </div>
+      )}
       {!adding && (
         <button
           onClick={() => setAdding(true)}
@@ -67,14 +86,15 @@ export function BlockList({ blocks, onChange, blockTypes }: Props) {
       {adding && (
         <div className="border border-ink/15 bg-surface p-4">
           <p className="text-xs uppercase tracking-widest text-muted mb-3">Choose a block</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {blockTypes.map((t) => (
               <button
                 key={t.type}
                 onClick={() => add(t.type)}
-                className="text-left px-3 py-2 text-sm border border-ink/10 hover:border-accent hover:bg-surface-100 transition-colors"
+                className="text-left px-3 py-2 border border-ink/10 hover:border-accent hover:bg-surface-100 transition-colors group"
               >
-                {t.label}
+                <p className="text-sm font-medium group-hover:text-accent">{t.label}</p>
+                <p className="text-[11px] text-muted leading-snug mt-0.5">{t.description}</p>
               </button>
             ))}
           </div>
@@ -89,6 +109,26 @@ export function BlockList({ blocks, onChange, blockTypes }: Props) {
     </div>
   );
 }
+
+// Short hint per block type — used in the card header to remind the editor
+// what part of the public page each block produces.
+const BLOCK_HINTS: Record<BlockType, string> = {
+  hero: 'Top of the page · big headline + image',
+  text: 'Paragraph section · headline + body',
+  image: 'Single image · narrow/wide/full-bleed',
+  gallery: 'Image grid · 2 / 3 / 4 columns',
+  video: 'Responsive 16:9 video player',
+  projects: 'Projects grid · pulls from /projects',
+  services: 'Service list · pulls from Services',
+  testimonials: 'Quotes · pulls from Testimonials',
+  stats: 'Big numbers · 4 across',
+  faq: 'Q & A list · also outputs FAQPage schema',
+  contact: 'Inline contact form · writes to Inquiries',
+  cta: 'Closing banner · headline + button',
+  marquee: 'Auto-scrolling text strip',
+  embed: 'Custom HTML · advanced',
+  spacer: 'Empty vertical space',
+};
 
 function BlockCard({
   block,
@@ -112,13 +152,14 @@ function BlockCard({
 
   return (
     <div className="border border-ink/15 bg-surface">
-      <div className="flex items-center justify-between px-3 py-2 bg-surface-100 border-b border-ink/10">
-        <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2 text-sm font-medium">
-          <span className="text-muted text-xs">{String(index + 1).padStart(2, '0')}</span>
-          <span className={open ? 'text-accent' : ''}>{open ? '▾' : '▸'}</span>
-          <span className="uppercase tracking-wider text-xs">{block.type}</span>
+      <div className="flex items-center justify-between px-3 py-2 bg-surface-100 border-b border-ink/10 gap-2">
+        <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2 text-sm font-medium min-w-0 flex-1 text-left">
+          <span className="text-muted text-xs shrink-0">{String(index + 1).padStart(2, '0')}</span>
+          <span className={`shrink-0 ${open ? 'text-accent' : ''}`}>{open ? '▾' : '▸'}</span>
+          <span className="uppercase tracking-wider text-xs shrink-0">{block.type}</span>
+          <span className="text-[10px] text-muted truncate hidden sm:inline">— {BLOCK_HINTS[block.type]}</span>
         </button>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           <button onClick={onDuplicate} className="btn-ghost text-xs px-1.5 py-1" title="Duplicate">⎘</button>
           <button onClick={() => onMove(-1)} disabled={index === 0} className="btn-ghost text-xs px-1.5 py-1 disabled:opacity-30">↑</button>
           <button onClick={() => onMove(1)} disabled={last} className="btn-ghost text-xs px-1.5 py-1 disabled:opacity-30">↓</button>
@@ -127,6 +168,7 @@ function BlockCard({
       </div>
       {open && (
         <div className="p-3 space-y-3">
+          <p className="sm:hidden text-[10px] text-muted">{BLOCK_HINTS[block.type]}</p>
           <BlockEditor block={block} onChange={onChange} />
           <details
             open={styleOpen}

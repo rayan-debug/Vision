@@ -37,6 +37,7 @@ export function PageEditor({
   const [dirty, setDirty] = useState(false);
   const [previewLocale, setPreviewLocale] = useState<Locale>('en');
   const [tab, setTab] = useState<'content' | 'seo' | 'settings'>('content');
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const update = useCallback(<K extends keyof Page>(key: K, value: Page[K]) => {
     setState((s) => ({ ...s, [key]: value }));
@@ -103,33 +104,42 @@ export function PageEditor({
   );
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-0px)] lg:overflow-hidden">
       {/* Left: editor */}
-      <div className="w-[480px] shrink-0 border-r border-ink/10 bg-surface-50 flex flex-col">
-        <header className="px-6 py-4 border-b border-ink/10 bg-surface flex items-center justify-between gap-3">
-          <div className="min-w-0">
+      <div className="w-full lg:w-[480px] shrink-0 border-b lg:border-b-0 lg:border-r border-ink/10 bg-surface-50 flex flex-col min-h-screen lg:min-h-0">
+        <header className="px-4 md:px-6 py-4 border-b border-ink/10 bg-surface flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-widest text-muted">Editing</p>
-            <h1 className="font-display text-xl truncate">
+            <h1 className="font-display text-lg md:text-xl truncate">
               {state.i18n.en?.title || state.slugEn}
             </h1>
           </div>
-          <span
-            className={clsx(
-              'tag',
-              state.status === 'PUBLISHED' ? 'border-accent text-accent' : 'text-muted'
-            )}
-          >
-            {dirty ? 'UNSAVED' : state.status}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className={clsx(
+                'tag',
+                state.status === 'PUBLISHED' ? 'border-accent text-accent' : 'text-muted'
+              )}
+            >
+              {dirty ? 'UNSAVED' : state.status}
+            </span>
+            <button
+              onClick={() => setPreviewOpen(true)}
+              className="lg:hidden btn-outline text-xs"
+              title="Show live preview"
+            >
+              Preview
+            </button>
+          </div>
         </header>
 
-        <div className="px-6 pt-4 flex gap-1 border-b border-ink/10 -mb-px">
+        <div className="px-4 md:px-6 pt-4 flex gap-1 border-b border-ink/10 -mb-px overflow-x-auto">
           {(['content', 'seo', 'settings'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={clsx(
-                'px-3 py-2 text-xs uppercase tracking-widest border-b-2 -mb-px transition-colors',
+                'px-3 py-2 text-xs uppercase tracking-widest border-b-2 -mb-px transition-colors shrink-0',
                 tab === t ? 'border-accent text-ink' : 'border-transparent text-muted hover:text-ink'
               )}
             >
@@ -138,7 +148,7 @@ export function PageEditor({
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6">
           {tab === 'content' && (
             <BlockList
               blocks={(state.blocks as unknown) as Block[]}
@@ -253,12 +263,12 @@ export function PageEditor({
           )}
         </div>
 
-        <footer className="px-6 py-4 border-t border-ink/10 bg-surface flex items-center justify-between gap-2">
+        <footer className="sticky bottom-0 px-4 md:px-6 py-3 md:py-4 border-t border-ink/10 bg-surface flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs text-muted">
             {dirty ? 'Unsaved changes' : `Saved ${new Date(state.updatedAt).toLocaleTimeString()}`}
             {error && <span className="ml-2 text-red-700">· {error}</span>}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 ml-auto">
             <button onClick={() => save()} disabled={busy || !dirty} className="btn-outline text-xs">
               {busy ? 'Saving…' : 'Save draft'}
             </button>
@@ -283,11 +293,17 @@ export function PageEditor({
         </footer>
       </div>
 
-      {/* Right: live preview */}
-      <div className="flex-1 flex flex-col bg-ink-100">
-        <div className="px-4 py-3 bg-ink text-bone flex items-center justify-between text-xs">
+      {/* Right: live preview (desktop) / modal (mobile) */}
+      <div
+        className={clsx(
+          'flex flex-col bg-ink-100',
+          'hidden lg:flex flex-1',
+          previewOpen && 'fixed inset-0 z-50 !flex',
+        )}
+      >
+        <div className="px-4 py-3 bg-ink text-bone flex items-center justify-between gap-2 text-xs">
           <span className="uppercase tracking-widest text-bone/60">Live preview</span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             {LOCALES.map((l) => (
               <button
                 key={l}
@@ -304,10 +320,16 @@ export function PageEditor({
               href={previewUrl}
               target="_blank"
               rel="noreferrer"
-              className="ml-2 px-2 py-1 hover:bg-ink-50 uppercase tracking-widest text-[10px]"
+              className="px-2 py-1 hover:bg-ink-50 uppercase tracking-widest text-[10px]"
             >
               Open ↗
             </a>
+            <button
+              onClick={() => setPreviewOpen(false)}
+              className="lg:hidden px-2 py-1 hover:bg-ink-50 uppercase tracking-widest text-[10px]"
+            >
+              Close
+            </button>
           </div>
         </div>
         <iframe

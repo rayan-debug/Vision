@@ -193,22 +193,24 @@ export type Block =
 
 export type BlockType = Block['type'];
 
-export const BLOCK_TYPES: { type: BlockType; label: string }[] = [
-  { type: 'hero', label: 'Hero' },
-  { type: 'text', label: 'Text' },
-  { type: 'image', label: 'Image' },
-  { type: 'gallery', label: 'Gallery' },
-  { type: 'video', label: 'Video' },
-  { type: 'projects', label: 'Projects grid' },
-  { type: 'services', label: 'Services' },
-  { type: 'testimonials', label: 'Testimonials' },
-  { type: 'stats', label: 'Stats / numbers' },
-  { type: 'faq', label: 'FAQ (AEO)' },
-  { type: 'contact', label: 'Contact form' },
-  { type: 'cta', label: 'Call to action' },
-  { type: 'marquee', label: 'Marquee' },
-  { type: 'embed', label: 'Embed / HTML' },
-  { type: 'spacer', label: 'Spacer' },
+// Each block carries a description shown in the add-block picker so editors
+// know exactly what they're inserting and where it appears.
+export const BLOCK_TYPES: { type: BlockType; label: string; description: string }[] = [
+  { type: 'hero', label: 'Hero', description: 'Full-width opener with a big headline. Goes at the top of the page.' },
+  { type: 'text', label: 'Text', description: 'A heading + body paragraph. Great for intros, about, and editorial copy.' },
+  { type: 'image', label: 'Image', description: 'A single image with optional caption. Narrow, wide, or full-bleed.' },
+  { type: 'gallery', label: 'Gallery', description: 'A 2/3/4-column image grid with alt text.' },
+  { type: 'video', label: 'Video', description: 'YouTube, Vimeo, or self-hosted MP4. Renders as a 16:9 player.' },
+  { type: 'projects', label: 'Projects grid', description: 'Pulls from Projects with optional category & limit. Used on the home page.' },
+  { type: 'services', label: 'Services', description: 'Lists everything you set in the Services section.' },
+  { type: 'testimonials', label: 'Testimonials', description: 'Client quotes from the Testimonials section. Cards or quote-stack.' },
+  { type: 'stats', label: 'Stats / numbers', description: 'Big numbers + labels — projects shipped, years, awards.' },
+  { type: 'faq', label: 'FAQ (AEO)', description: 'Question & answer list. Also outputs FAQPage schema for AI search.' },
+  { type: 'contact', label: 'Contact form', description: 'Inline form that writes to the Inquiries inbox.' },
+  { type: 'cta', label: 'Call to action', description: 'Bordered banner with a heading + button. Use to close a page.' },
+  { type: 'marquee', label: 'Marquee', description: 'Auto-scrolling text strip. Brand keywords or services.' },
+  { type: 'embed', label: 'Embed / HTML', description: 'Paste raw HTML/iframe markup. Anything custom you can\'t do with a block.' },
+  { type: 'spacer', label: 'Spacer', description: 'Empty vertical space between sections.' },
 ];
 
 // Translatable navigation labels stored on SiteSettings.navLabels.

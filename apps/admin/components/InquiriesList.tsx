@@ -113,15 +113,18 @@ export function InquiriesList({ initial }: { initial: Inquiry[] }) {
                   setOpenId(open ? null : i.id);
                   if (!open && i.status === 'NEW') setStatus(i.id, 'READ');
                 }}
-                className="w-full grid grid-cols-12 gap-4 px-4 py-3 text-left hover:bg-surface-100 transition-colors"
+                className="w-full flex flex-col gap-1 md:grid md:grid-cols-12 md:gap-4 px-4 py-3 text-left hover:bg-surface-100 transition-colors"
               >
-                <div className="col-span-3 flex items-center gap-2 min-w-0">
+                <div className="md:col-span-3 flex items-center gap-2 min-w-0">
                   {i.status === 'NEW' && <span className="w-2 h-2 rounded-full bg-accent shrink-0" />}
                   <span className="font-medium truncate">{i.name}</span>
+                  <span className="md:hidden ml-auto text-[10px] text-muted shrink-0">
+                    {new Date(i.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
-                <div className="col-span-3 text-sm text-muted truncate">{i.email}</div>
-                <div className="col-span-4 text-sm text-muted truncate">{i.message}</div>
-                <div className="col-span-2 text-right text-xs text-muted">
+                <div className="md:col-span-3 text-sm text-muted truncate">{i.email}</div>
+                <div className="md:col-span-4 text-sm text-muted line-clamp-2 md:truncate">{i.message}</div>
+                <div className="hidden md:block md:col-span-2 text-right text-xs text-muted">
                   {new Date(i.createdAt).toLocaleDateString()}
                 </div>
               </button>

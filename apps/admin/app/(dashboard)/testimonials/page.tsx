@@ -7,11 +7,13 @@ export default async function TestimonialsIndex() {
   const items = await prisma.testimonial.findMany({ orderBy: [{ order: 'asc' }, { createdAt: 'desc' }] });
 
   return (
-    <div className="p-8 md:p-12 max-w-5xl">
+    <div className="p-4 md:p-8 lg:p-12 max-w-5xl">
       <div className="mb-10">
         <p className="text-xs uppercase tracking-widest text-accent mb-2">Content</p>
-        <h1 className="font-display text-5xl">Testimonials</h1>
-        <p className="text-muted mt-2">Quotes from clients. Use the Testimonials block on any page to display them.</p>
+        <h1 className="font-display text-3xl md:text-5xl">Testimonials</h1>
+        <p className="text-muted mt-2 max-w-2xl">
+          Quotes from clients. Doesn&apos;t appear automatically — drop the <strong>Testimonials</strong> block on any page to display them. Featured items show first and can be filtered to in the block.
+        </p>
       </div>
       <TestimonialsEditor
         initial={items.map((t) => ({

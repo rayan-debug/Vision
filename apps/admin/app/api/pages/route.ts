@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@roua/db';
+import { getTemplate, prisma } from '@roua/db';
 import { requireSession } from '@/lib/session';
 
 export async function POST(req: Request) {
@@ -9,6 +9,7 @@ export async function POST(req: Request) {
   const titleAr = String(body.titleAr ?? '').trim();
   const slugEn = String(body.slugEn ?? '').trim().toLowerCase();
   const slugAr = String(body.slugAr ?? '').trim().toLowerCase();
+  const templateId = typeof body.templateId === 'string' ? body.templateId : 'blank';
 
   if (!titleEn || !titleAr || !slugEn || !slugAr) {
     return NextResponse.json({ error: 'All fields required.' }, { status: 400 });
@@ -16,6 +17,9 @@ export async function POST(req: Request) {
   if (!/^[a-z0-9-]+$/.test(slugEn) || !/^[a-z0-9-]+$/.test(slugAr)) {
     return NextResponse.json({ error: 'Slugs must be lowercase letters, numbers, and dashes.' }, { status: 400 });
   }
+
+  const template = getTemplate(templateId);
+  const blocks = template ? template.build() : [];
 
   try {
     const page = await prisma.page.create({
@@ -26,7 +30,7 @@ export async function POST(req: Request) {
           en: { title: titleEn, description: '', keywords: '' },
           ar: { title: titleAr, description: '', keywords: '' },
         },
-        blocks: [],
+        blocks: blocks as object,
         status: 'DRAFT',
       },
     });

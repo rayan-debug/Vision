@@ -18,3 +18,4 @@ if (process.env.NODE_ENV !== 'production') {
 export * from '@prisma/client';
 export * from './types';
 export * from './i18n';
+export * from './templates';

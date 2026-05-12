@@ -14,14 +14,17 @@ export default async function ProjectsIndex() {
   ).sort();
 
   return (
-    <div className="p-8 md:p-12 max-w-6xl">
-      <div className="flex items-center justify-between mb-10">
+    <div className="p-4 md:p-8 lg:p-12 max-w-6xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-accent mb-2">Content</p>
-          <h1 className="font-display text-5xl">Projects</h1>
+          <h1 className="font-display text-3xl md:text-5xl">Projects</h1>
         </div>
         <Link href="/projects/new" className="btn-accent">+ New project</Link>
       </div>
+      <p className="text-sm text-muted mb-8 md:mb-10 max-w-2xl">
+        Portfolio entries. Appears on <code className="text-xs">/projects</code> and inside any Projects-grid block (e.g. the home page). ★ = featured (shown first and used in featured-only blocks).
+      </p>
 
       <ProjectsList
         initial={projects.map((p) => {

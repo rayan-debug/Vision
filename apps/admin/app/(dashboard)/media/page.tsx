@@ -7,11 +7,11 @@ export default async function MediaPage() {
     orderBy: { createdAt: 'desc' },
   });
   return (
-    <div className="p-8 md:p-12 max-w-6xl">
+    <div className="p-4 md:p-8 lg:p-12 max-w-6xl">
       <p className="text-xs uppercase tracking-widest text-accent mb-2">Library</p>
-      <h1 className="font-display text-5xl mb-2">Media</h1>
-      <p className="text-muted mb-10">
-        Upload images here, then copy their URLs into block fields or project images.
+      <h1 className="font-display text-3xl md:text-5xl mb-2">Media</h1>
+      <p className="text-muted mb-8 md:mb-10 max-w-2xl">
+        Your image library. Every image picker on the site (logo, favicon, OG image, hero, image blocks, gallery, project covers, testimonial avatars) reads from here. Upload once, reuse anywhere.
       </p>
       <MediaLibrary
         initial={media.map((m) => ({

@@ -123,21 +123,21 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
   }, [s.primaryColor, s.accentColor]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
-      <nav className="md:sticky md:top-6 self-start space-y-0.5">
+    <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-4 md:gap-6">
+      <nav className="md:sticky md:top-6 self-start flex md:block overflow-x-auto md:overflow-visible -mx-4 px-4 md:mx-0 md:px-0 gap-1 md:gap-0 md:space-y-0.5 pb-1 md:pb-0">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
             className={clsx(
-              'w-full text-left px-3 py-2 text-sm transition-colors border-l-2',
+              'shrink-0 md:w-full text-left px-3 py-2 text-sm transition-colors border-b-2 md:border-b-0 md:border-l-2',
               tab === t.id
                 ? 'border-accent bg-surface-100 text-ink'
                 : 'border-transparent text-muted hover:text-ink hover:bg-surface-100'
             )}
           >
-            <span className="block font-medium">{t.label}</span>
-            <span className="block text-[10px] uppercase tracking-widest opacity-60">{t.hint}</span>
+            <span className="block font-medium whitespace-nowrap">{t.label}</span>
+            <span className="hidden md:block text-[10px] uppercase tracking-widest opacity-60">{t.hint}</span>
           </button>
         ))}
       </nav>
@@ -145,7 +145,10 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
       <div className="space-y-6">
         {tab === 'brand' && (
           <section className="card">
-            <h2 className="font-display text-xl mb-4">Brand</h2>
+            <h2 className="font-display text-xl mb-1">Brand</h2>
+            <p className="text-xs text-muted mb-5">
+              Appears in: the header logo text, browser tab title, social share previews, and footer.
+            </p>
             {LOCALES.map((loc) => (
               <div key={loc} className="mb-6 last:mb-0 pb-6 border-b last:border-b-0 last:pb-0 border-ink/10">
                 <p className="text-[10px] uppercase tracking-widest text-accent mb-3">{loc}</p>
@@ -419,7 +422,10 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
         {tab === 'contact' && (
           <>
             <section className="card">
-              <h2 className="font-display text-xl mb-4">Contact</h2>
+              <h2 className="font-display text-xl mb-1">Contact</h2>
+              <p className="text-xs text-muted mb-4">
+                Appears in: the public footer, Contact page header, and structured data for search engines.
+              </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <label className="block">
                   <span className="label">Email</span>
@@ -437,7 +443,10 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
             </section>
 
             <section className="card">
-              <h2 className="font-display text-xl mb-4">Social</h2>
+              <h2 className="font-display text-xl mb-1">Social</h2>
+              <p className="text-xs text-muted mb-4">
+                Appears in: the footer&apos;s social links. Empty fields are hidden automatically.
+              </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {(['instagram', 'behance', 'dribbble', 'linkedin', 'twitter', 'youtube', 'tiktok', 'pinterest'] as const).map((key) => (
                   <label key={key} className="block">
@@ -493,7 +502,10 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
 
         {tab === 'seo' && (
           <section className="card">
-            <h2 className="font-display text-xl mb-4">SEO & brand assets</h2>
+            <h2 className="font-display text-xl mb-1">SEO & brand assets</h2>
+            <p className="text-xs text-muted mb-4">
+              The logo shows in the header. Favicon is the browser tab icon. The OG image is the preview used when someone shares any page on social media.
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
               <div className="block">
                 <span className="label">Logo</span>
