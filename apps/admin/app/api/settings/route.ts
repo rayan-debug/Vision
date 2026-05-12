@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@roua/db';
 import { requireSession } from '@/lib/session';
+import { logActivity } from '@/lib/activity';
 
 const NULLABLE_STRING_FIELDS = [
   'email',
@@ -31,7 +32,7 @@ const NULLABLE_STRING_FIELDS = [
 const VALID_LETTER_SPACING = new Set(['tight', 'normal', 'loose']);
 
 export async function PATCH(req: Request) {
-  await requireSession();
+  const session = await requireSession();
   const body = await req.json();
   const data: Record<string, unknown> = {};
 
@@ -64,6 +65,13 @@ export async function PATCH(req: Request) {
     where: { id: 'singleton' },
     update: data,
     create: { id: 'singleton', i18n: body.i18n ?? { en: { siteName: '' }, ar: { siteName: '' } }, ...data },
+  });
+  await logActivity({
+    userEmail: session.email,
+    entityType: 'settings',
+    entityId: 'singleton',
+    entityName: 'Site settings',
+    action: 'updated',
   });
   return NextResponse.json({ ok: true });
 }

@@ -50,6 +50,8 @@ model Page {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
+  revisions   PageRevision[]
+
   @@index([status])
 }
 
@@ -188,6 +190,54 @@ model Inquiry {
   updatedAt DateTime      @updatedAt
 
   @@index([status, createdAt])
+}
+
+// Append-only revision history for pages. A new row is created on every save
+// (debounced) so admins can preview and restore prior versions of a page.
+// Capped to the most recent N revisions per page in application code.
+model PageRevision {
+  id          String     @id @default(cuid())
+  pageId      String
+  page        Page       @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  i18n        Json
+  blocks      Json
+  status      PageStatus
+  ogImage     String?
+  noindex     Boolean    @default(false)
+  showInNav   Boolean    @default(true)
+  navOrder    Int        @default(0)
+  isHome      Boolean    @default(false)
+  // Email of the admin who created this revision (the user that saved).
+  editorEmail String?
+  // Optional, short summary of what changed (auto-derived or admin-supplied).
+  note        String?
+  createdAt   DateTime   @default(now())
+
+  @@index([pageId, createdAt])
+}
+
+// Lightweight audit log of admin actions. Powers the dashboard "Recent
+// activity" feed and lets the admin see who changed what across the site.
+model ActivityLog {
+  id          String   @id @default(cuid())
+  // 'page' | 'project' | 'template' | 'service' | 'testimonial' | 'settings'
+  // | 'inquiry' | 'media' — kept loose so we can add entity types without a
+  // migration.
+  entityType  String
+  entityId    String
+  // Friendly label captured at write time so the feed survives deletions.
+  entityName  String?
+  // Who performed the action.
+  userEmail   String
+  // 'created' | 'updated' | 'published' | 'unpublished' | 'deleted'
+  // | 'duplicated' | 'restored' | 'ai_generated'
+  action      String
+  // Optional free-form context (e.g. revision id, replaced count).
+  meta        Json?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
 }
 
 // Reusable page templates. Each is a saved set of blocks the admin can drop

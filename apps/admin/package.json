@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.2",
     "@roua/db": "*",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
@@ -16,7 +17,8 @@
     "jose": "^5.9.6",
     "next": "^15.0.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

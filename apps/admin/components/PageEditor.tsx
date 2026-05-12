@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { BlockList } from './BlockList';
 import { SeoHealth } from './SeoHealth';
+import { AiAssistant } from './AiAssistant';
+import { PageHistory } from './PageHistory';
 import { BLOCK_TYPES, LOCALES, type Block, type Locale } from '@roua/db';
 
 type Device = 'desktop' | 'tablet' | 'mobile';
@@ -48,6 +50,7 @@ export function PageEditor({
   const [tab, setTab] = useState<'content' | 'seo' | 'settings'>('content');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [device, setDevice] = useState<Device>('desktop');
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   // Undo/redo history. The current state always lives at history[index].
   // History is in-memory only and resets on reload — that's fine: it's a
@@ -401,7 +404,10 @@ export function PageEditor({
                 />
               </label>
 
-              <div className="pt-6 border-t border-ink/10">
+              <div className="pt-6 border-t border-ink/10 space-y-3">
+                <button onClick={() => setHistoryOpen(true)} className="btn-outline w-full">
+                  ◷ Version history
+                </button>
                 <button onClick={destroy} className="btn-danger">
                   Delete page
                 </button>
@@ -504,6 +510,32 @@ export function PageEditor({
           />
         </div>
       </div>
+
+      <AiAssistant
+        pageTitle={state.i18n.en?.title}
+        onAppendBlocks={(blocks) => updateBlocks([...(state.blocks as unknown as Block[]), ...blocks])}
+        onReplaceBlocks={(blocks) => updateBlocks(blocks)}
+      />
+
+      {historyOpen && (
+        <PageHistory
+          pageId={state.id}
+          onClose={() => setHistoryOpen(false)}
+          onRestore={(snapshot) => {
+            commit({
+              ...state,
+              i18n: snapshot.i18n,
+              blocks: snapshot.blocks,
+              ogImage: snapshot.ogImage,
+              noindex: snapshot.noindex,
+              showInNav: snapshot.showInNav,
+              navOrder: snapshot.navOrder,
+              isHome: snapshot.isHome,
+            });
+            setHistoryOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

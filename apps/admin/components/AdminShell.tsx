@@ -13,6 +13,7 @@ const NAV = [
   { href: '/testimonials', label: 'Testimonials', icon: '❝' },
   { href: '/media', label: 'Media', icon: '◉' },
   { href: '/inquiries', label: 'Inquiries', icon: '✉' },
+  { href: '/find-replace', label: 'Find & replace', icon: '⇄' },
   { href: '/settings', label: 'Site settings', icon: '✦' },
 ];
 

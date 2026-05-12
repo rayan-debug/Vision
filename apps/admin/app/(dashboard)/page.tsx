@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@roua/db';
+import { ActivityFeed } from '@/components/ActivityFeed';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,6 +126,13 @@ export default async function Dashboard() {
           </div>
         </section>
       </div>
+
+      <section className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-2xl">Recent activity</h2>
+        </div>
+        <ActivityFeed limit={10} />
+      </section>
 
       {recentInquiries.length > 0 && (
         <section>
