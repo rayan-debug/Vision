@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import clsx from 'clsx';
 import { LOCALES, type Locale } from '@roua/db';
+import { MediaPicker } from './MediaPicker';
 
 type Meta = { title: string; description: string; fullContent?: string; client?: string; role?: string };
 type Project = {
@@ -142,32 +143,30 @@ export function ProjectEditor({ project }: { project: Project }) {
 
           <div className="card">
             <p className="text-xs uppercase tracking-widest text-muted mb-3">Images</p>
-            <label className="block mb-3">
-              <span className="label">Cover image URL</span>
-              <input
-                className="input"
+            <div className="block mb-3">
+              <span className="label">Cover image</span>
+              <MediaPicker
                 value={s.coverImage}
-                onChange={(e) => u('coverImage', e.target.value)}
+                onChange={(url) => u('coverImage', url)}
+                aspect="video"
               />
-              {s.coverImage && (
-                <img src={s.coverImage} alt="" className="mt-2 max-h-48 object-cover" />
-              )}
-            </label>
+            </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="label mb-0">Additional images (URLs)</span>
+                <span className="label mb-0">Additional images</span>
                 <button
                   onClick={() => u('images', [...s.images, ''])}
                   className="btn-ghost text-xs"
                 >+ Add</button>
               </div>
               {s.images.map((img, i) => (
-                <div key={i} className="flex gap-2 mb-2">
-                  <input
-                    className="input font-mono text-xs flex-1"
-                    value={img}
-                    onChange={(e) => u('images', s.images.map((x, j) => (j === i ? e.target.value : x)))}
-                  />
+                <div key={i} className="flex gap-2 mb-2 items-start">
+                  <div className="flex-1">
+                    <MediaPicker
+                      value={img}
+                      onChange={(url) => u('images', s.images.map((x, j) => (j === i ? url : x)))}
+                    />
+                  </div>
                   <button
                     onClick={() => u('images', s.images.filter((_, j) => j !== i))}
                     className="btn-ghost text-xs"

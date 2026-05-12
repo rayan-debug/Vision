@@ -8,6 +8,13 @@
   --accent-dark-rgb: 227 74 19;
   --accent-light-rgb: 255 122 77;
   --accent: rgb(var(--accent-rgb));
+  /* Typography defaults — the root layout overrides these inline based on settings. */
+  --font-display-override: 'Playfair Display', Georgia, serif;
+  --font-sans-override: 'Inter', system-ui, sans-serif;
+  --font-mono-override: 'JetBrains Mono', ui-monospace, monospace;
+  --font-scale: 1;
+  --section-spacing: 1;
+  --heading-tracking: -0.02em;
 }
 
 * {
@@ -19,6 +26,37 @@ html,
 body {
   background: rgb(var(--ink-rgb));
   color: #f5f1ea;
+  font-family: var(--font-sans-override);
+}
+
+.font-display {
+  font-family: var(--font-display-override);
+  letter-spacing: var(--heading-tracking);
+}
+.font-sans {
+  font-family: var(--font-sans-override);
+}
+.font-mono {
+  font-family: var(--font-mono-override);
+}
+
+/* Apply heading scale to display sizes. The Tailwind clamp() values stay,
+   and we add a transform-friendly --font-scale multiplier so admins can
+   dial all hero/section headings up or down. */
+.text-mega { font-size: calc(clamp(4rem, 14vw, 14rem) * var(--font-scale)); }
+.text-super { font-size: calc(clamp(3rem, 9vw, 8rem) * var(--font-scale)); }
+.text-display { font-size: calc(clamp(2rem, 5vw, 4rem) * var(--font-scale)); }
+
+/* Section spacing — utility classes consumed by block renderers. */
+.section-spacing {
+  padding-top: calc(6rem * var(--section-spacing));
+  padding-bottom: calc(6rem * var(--section-spacing));
+}
+@media (min-width: 768px) {
+  .section-spacing {
+    padding-top: calc(8rem * var(--section-spacing));
+    padding-bottom: calc(8rem * var(--section-spacing));
+  }
 }
 
 ::selection {

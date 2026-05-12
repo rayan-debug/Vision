@@ -8,11 +8,13 @@ const NAV = [
   { href: '/pages', label: 'Pages', icon: '▤' },
   { href: '/projects', label: 'Projects', icon: '▢' },
   { href: '/services', label: 'Services', icon: '◐' },
+  { href: '/testimonials', label: 'Testimonials', icon: '❝' },
   { href: '/media', label: 'Media', icon: '◉' },
+  { href: '/inquiries', label: 'Inquiries', icon: '✉' },
   { href: '/settings', label: 'Site settings', icon: '✦' },
 ];
 
-export function Sidebar({ email }: { email: string }) {
+export function Sidebar({ email, unreadInquiries = 0 }: { email: string; unreadInquiries?: number }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -51,7 +53,17 @@ export function Sidebar({ email }: { email: string }) {
               )}
             >
               <span className="text-base w-5 text-center">{item.icon}</span>
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {item.href === '/inquiries' && unreadInquiries > 0 && (
+                <span
+                  className={clsx(
+                    'text-[10px] px-1.5 py-0.5 font-mono',
+                    active ? 'bg-ink text-accent' : 'bg-accent text-ink'
+                  )}
+                >
+                  {unreadInquiries}
+                </span>
+              )}
             </Link>
           );
         })}

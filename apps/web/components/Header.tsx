@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { prisma, t, type Locale } from '@roua/db';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-const NAV_LABELS: Record<Locale, { work: string }> = {
-  en: { work: 'Work' },
-  ar: { work: 'الأعمال' },
+const NAV_DEFAULTS: Record<Locale, { work: string; contact: string }> = {
+  en: { work: 'Work', contact: 'Contact' },
+  ar: { work: 'الأعمال', contact: 'تواصل' },
 };
 
 export async function Header({ locale }: { locale: Locale }) {
@@ -18,18 +18,24 @@ export async function Header({ locale }: { locale: Locale }) {
   ]);
 
   const siteName = settings ? t(settings.i18n, locale) : 'The Vision';
+  const navLabels = (settings?.navLabels as Record<string, { work?: string; contact?: string }> | null) ?? null;
+  const workLabel = navLabels?.[locale]?.work || NAV_DEFAULTS[locale].work;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-5 md:py-6 bg-gradient-to-b from-ink to-transparent backdrop-blur-[2px]">
       <div className="flex items-center justify-between gap-8">
         <Link href={`/${locale}`} className="flex items-center gap-2 group">
-          <Logo />
+          {settings?.logoUrl ? (
+            <img src={settings.logoUrl} alt="" className="h-6 w-auto" />
+          ) : (
+            <Logo />
+          )}
           <span className="font-display text-lg tracking-tight">{siteName}</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm tracking-wide uppercase">
           <Link href={`/${locale}/projects`} className="link-underline">
-            {NAV_LABELS[locale].work}
+            {workLabel}
           </Link>
           {pages.map((p) => {
             const meta = (p.i18n as Record<string, { title: string }>)[locale];

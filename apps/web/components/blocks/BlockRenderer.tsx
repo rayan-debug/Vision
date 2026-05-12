@@ -10,6 +10,10 @@ import { Contact } from './Contact';
 import { CTA } from './CTA';
 import { Marquee } from './Marquee';
 import { Spacer } from './Spacer';
+import { Testimonials } from './Testimonials';
+import { Stats } from './Stats';
+import { Video } from './Video';
+import { Embed } from './Embed';
 
 // Dispatches each block to its renderer. Unknown block types are skipped
 // silently so renamed/removed types don't break old pages.
@@ -40,6 +44,14 @@ export function BlockRenderer({ blocks, locale }: { blocks: Block[]; locale: Loc
             return <Marquee key={b.id} block={b} locale={locale} />;
           case 'spacer':
             return <Spacer key={b.id} block={b} />;
+          case 'testimonials':
+            return <Testimonials key={b.id} block={b} locale={locale} />;
+          case 'stats':
+            return <Stats key={b.id} block={b} locale={locale} />;
+          case 'video':
+            return <Video key={b.id} block={b} locale={locale} />;
+          case 'embed':
+            return <Embed key={b.id} block={b} locale={locale} />;
           default:
             return null;
         }

@@ -122,12 +122,76 @@ model SiteSettings {
   dribbble     String?
   linkedin    String?
   twitter      String?
+  youtube      String?
+  tiktok       String?
+  pinterest    String?
   logoUrl      String?
   faviconUrl   String?
   primaryColor String   @default("#0a0a0a")
   accentColor  String   @default("#ff4d1a")
+  // Default OpenGraph image used by pages that don't define their own.
+  defaultOgImage String?
+  // Optional analytics. Each is an opt-in script injected into <head> by the
+  // web app when set; leave blank to disable.
+  gaId             String?  // e.g. "G-XXXXXXX"
+  plausibleDomain  String?  // e.g. "thevision.studio"
+  // Free-form CSS appended to the public site's <head>. Use for one-off tweaks
+  // without redeploying.
+  customCss        String?  @db.Text
+  // Translatable navigation labels — e.g. { en: { work: "Work" }, ar: { work: "الأعمال" } }
+  navLabels        Json?
+  // Typography. Each font name must be a Google-Fonts family ("Inter",
+  // "Playfair Display", "JetBrains Mono", etc.) and is loaded lazily in the
+  // web app's <head>. Leave null to use the built-in defaults.
+  displayFont      String?  // headings
+  bodyFont         String?  // body copy
+  monoFont         String?  // <code>, captions
+  // 0.85 – 1.4 multiplier applied to all clamp() heading sizes. 1 = default.
+  fontScale        Float    @default(1.0)
+  // Multiplier for top/bottom section padding (1 = default).
+  sectionSpacing   Float    @default(1.0)
+  // 'tight' | 'normal' | 'loose'
+  letterSpacing    String   @default("normal")
   // AEO: structured FAQs that get rendered as FAQPage JSON-LD on the home page.
   // [{ q: { en, ar }, a: { en, ar } }, ...]
   faqs         Json     @default("[]")
   updatedAt    DateTime @updatedAt
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+// Contact-form submissions from the public site. Replaces the previous hack
+// of storing messages in the Media table.
+model Inquiry {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  message   String        @db.Text
+  source    String?       // e.g. "contact-form", "footer", referrer
+  locale    String?       // locale the visitor used
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status, createdAt])
+}
+
+// Client testimonials for use in pages via the "testimonials" block.
+model Testimonial {
+  id          String   @id @default(cuid())
+  // i18n: { en: { quote, name, role }, ar: { ... } } — name/role can be left
+  // empty per-locale to fall back to the default locale.
+  i18n        Json
+  avatarUrl   String?
+  rating      Int?     // optional 1–5 stars
+  order       Int      @default(0)
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([featured, order])
 }

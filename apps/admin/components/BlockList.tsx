@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { randomId } from '@/lib/id';
 import { LOCALES, type Block, type BlockType, type Locale } from '@roua/db';
+import { MediaPicker } from './MediaPicker';
 
 type Props = {
   blocks: Block[];
@@ -27,6 +28,14 @@ export function BlockList({ blocks, onChange, blockTypes }: Props) {
   function remove(i: number) {
     onChange(blocks.filter((_, idx) => idx !== i));
   }
+  function duplicate(i: number) {
+    const copy = blocks.slice();
+    const src = blocks[i];
+    const clone = JSON.parse(JSON.stringify(src)) as Block;
+    clone.id = randomId();
+    copy.splice(i + 1, 0, clone);
+    onChange(copy);
+  }
   function add(type: BlockType) {
     onChange([...blocks, defaultBlock(type)]);
     setAdding(false);
@@ -43,6 +52,7 @@ export function BlockList({ blocks, onChange, blockTypes }: Props) {
           onChange={(nb) => update(i, nb)}
           onMove={(d) => move(i, d)}
           onRemove={() => remove(i)}
+          onDuplicate={() => duplicate(i)}
         />
       ))}
 
@@ -87,6 +97,7 @@ function BlockCard({
   onChange,
   onMove,
   onRemove,
+  onDuplicate,
 }: {
   block: Block;
   index: number;
@@ -94,8 +105,10 @@ function BlockCard({
   onChange: (b: Block) => void;
   onMove: (d: -1 | 1) => void;
   onRemove: () => void;
+  onDuplicate: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [styleOpen, setStyleOpen] = useState(false);
 
   return (
     <div className="border border-ink/15 bg-surface">
@@ -106,6 +119,7 @@ function BlockCard({
           <span className="uppercase tracking-wider text-xs">{block.type}</span>
         </button>
         <div className="flex items-center gap-1">
+          <button onClick={onDuplicate} className="btn-ghost text-xs px-1.5 py-1" title="Duplicate">⎘</button>
           <button onClick={() => onMove(-1)} disabled={index === 0} className="btn-ghost text-xs px-1.5 py-1 disabled:opacity-30">↑</button>
           <button onClick={() => onMove(1)} disabled={last} className="btn-ghost text-xs px-1.5 py-1 disabled:opacity-30">↓</button>
           <button onClick={onRemove} className="btn-ghost text-xs px-1.5 py-1 hover:text-red-700">×</button>
@@ -114,7 +128,179 @@ function BlockCard({
       {open && (
         <div className="p-3 space-y-3">
           <BlockEditor block={block} onChange={onChange} />
+          <details
+            open={styleOpen}
+            onToggle={(e) => setStyleOpen((e.target as HTMLDetailsElement).open)}
+            className="border-t border-ink/10 pt-3"
+          >
+            <summary className="cursor-pointer text-xs uppercase tracking-widest text-muted hover:text-ink select-none">
+              Style overrides {block.style && Object.keys(block.style).length > 0 && <span className="text-accent">·</span>}
+            </summary>
+            <div className="mt-3">
+              <StyleOverrideEditor
+                value={block.style}
+                onChange={(style) => onChange({ ...(block as Block), style } as Block)}
+              />
+            </div>
+          </details>
         </div>
+      )}
+    </div>
+  );
+}
+
+function StyleOverrideEditor({
+  value,
+  onChange,
+}: {
+  value: import('@roua/db').BlockStyle | undefined;
+  onChange: (s: import('@roua/db').BlockStyle | undefined) => void;
+}) {
+  const s = value ?? {};
+  function set<K extends keyof import('@roua/db').BlockStyle>(k: K, v: import('@roua/db').BlockStyle[K] | undefined) {
+    const next = { ...s, [k]: v };
+    // Strip undefined/empty so dirty checks and DB stay clean.
+    for (const key of Object.keys(next) as (keyof import('@roua/db').BlockStyle)[]) {
+      const val = next[key];
+      if (val === undefined || val === '' || val === null) delete next[key];
+    }
+    onChange(Object.keys(next).length === 0 ? undefined : next);
+  }
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      <label className="block col-span-2 md:col-span-1">
+        <span className="label">Background color</span>
+        <div className="flex gap-2 items-center">
+          <input
+            type="color"
+            className="input h-9 w-14 p-1"
+            value={s.background ?? '#000000'}
+            onChange={(e) => set('background', e.target.value)}
+          />
+          <input
+            className="input font-mono text-xs"
+            placeholder="auto"
+            value={s.background ?? ''}
+            onChange={(e) => set('background', e.target.value || undefined)}
+          />
+        </div>
+      </label>
+      <label className="block col-span-2 md:col-span-1">
+        <span className="label">Text color</span>
+        <div className="flex gap-2 items-center">
+          <input
+            type="color"
+            className="input h-9 w-14 p-1"
+            value={s.textColor ?? '#ffffff'}
+            onChange={(e) => set('textColor', e.target.value)}
+          />
+          <input
+            className="input font-mono text-xs"
+            placeholder="auto"
+            value={s.textColor ?? ''}
+            onChange={(e) => set('textColor', e.target.value || undefined)}
+          />
+        </div>
+      </label>
+
+      <label className="block">
+        <span className="label">Heading scale ({(s.headingScale ?? 1).toFixed(2)}×)</span>
+        <input
+          type="range"
+          min="0.5"
+          max="2"
+          step="0.05"
+          value={s.headingScale ?? 1}
+          onChange={(e) => set('headingScale', Number(e.target.value))}
+          className="w-full"
+        />
+      </label>
+      <label className="block">
+        <span className="label">Body size (rem)</span>
+        <input
+          type="number"
+          step="0.1"
+          min="0.5"
+          max="3"
+          className="input"
+          placeholder="auto"
+          value={s.textScale ?? ''}
+          onChange={(e) => set('textScale', e.target.value ? Number(e.target.value) : undefined)}
+        />
+      </label>
+      <label className="block">
+        <span className="label">Vertical padding ({(s.paddingY ?? 1).toFixed(2)}×)</span>
+        <input
+          type="range"
+          min="0"
+          max="2.5"
+          step="0.05"
+          value={s.paddingY ?? 1}
+          onChange={(e) => set('paddingY', Number(e.target.value))}
+          className="w-full"
+        />
+      </label>
+      <label className="block">
+        <span className="label">Horizontal padding</span>
+        <select
+          className="select"
+          value={s.paddingX ?? ''}
+          onChange={(e) => set('paddingX', (e.target.value || undefined) as import('@roua/db').BlockStyle['paddingX'])}
+        >
+          <option value="">Default</option>
+          <option value="tight">Tight</option>
+          <option value="normal">Normal</option>
+          <option value="wide">Wide</option>
+          <option value="edge">Edge-to-edge</option>
+        </select>
+      </label>
+      <label className="block">
+        <span className="label">Alignment</span>
+        <select
+          className="select"
+          value={s.align ?? ''}
+          onChange={(e) => set('align', (e.target.value || undefined) as import('@roua/db').BlockStyle['align'])}
+        >
+          <option value="">Default</option>
+          <option value="left">Left</option>
+          <option value="center">Center</option>
+          <option value="right">Right</option>
+        </select>
+      </label>
+      <label className="block">
+        <span className="label">Max width</span>
+        <select
+          className="select"
+          value={s.maxWidth ?? ''}
+          onChange={(e) => set('maxWidth', (e.target.value || undefined) as import('@roua/db').BlockStyle['maxWidth'])}
+        >
+          <option value="">Default</option>
+          <option value="narrow">Narrow</option>
+          <option value="normal">Normal</option>
+          <option value="wide">Wide</option>
+          <option value="full">Full</option>
+        </select>
+      </label>
+      <label className="block">
+        <span className="label">Hide on</span>
+        <select
+          className="select"
+          value={s.hideOn ?? ''}
+          onChange={(e) => set('hideOn', (e.target.value || undefined) as import('@roua/db').BlockStyle['hideOn'])}
+        >
+          <option value="">Show everywhere</option>
+          <option value="mobile">Hide on mobile</option>
+          <option value="desktop">Hide on desktop</option>
+        </select>
+      </label>
+      {Object.keys(s).length > 0 && (
+        <button
+          type="button"
+          onClick={() => onChange(undefined)}
+          className="col-span-2 text-xs text-muted hover:text-red-700 text-left mt-1"
+        >
+          Clear all overrides
+        </button>
       )}
     </div>
   );
@@ -141,14 +327,14 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
             multiline
             onChange={(v) => onChange({ ...block, subheading: v })}
           />
-          <label className="block">
-            <span className="label">Background image URL</span>
-            <input
-              className="input"
+          <div className="block">
+            <span className="label">Background image</span>
+            <MediaPicker
               value={block.image ?? ''}
-              onChange={(e) => onChange({ ...block, image: e.target.value })}
+              onChange={(url) => onChange({ ...block, image: url })}
+              aspect="video"
             />
-          </label>
+          </div>
           <label className="block">
             <span className="label">Variant</span>
             <select
@@ -200,10 +386,14 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
     case 'image':
       return (
         <>
-          <label className="block">
-            <span className="label">Image URL</span>
-            <input className="input" value={block.src} onChange={(e) => onChange({ ...block, src: e.target.value })} />
-          </label>
+          <div className="block">
+            <span className="label">Image</span>
+            <MediaPicker
+              value={block.src}
+              onChange={(url) => onChange({ ...block, src: url })}
+              aspect="video"
+            />
+          </div>
           <LocalizedField label="Alt text" value={block.alt} onChange={(v) => onChange({ ...block, alt: v })} />
           <LocalizedField
             label="Caption"
@@ -402,19 +592,18 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
                     Remove
                   </button>
                 </div>
-                <label className="block">
-                  <span className="label">Image URL</span>
-                  <input
-                    className="input"
+                <div className="block">
+                  <span className="label">Image</span>
+                  <MediaPicker
                     value={img.src}
-                    onChange={(e) =>
+                    onChange={(url) =>
                       onChange({
                         ...block,
-                        images: block.images.map((x, j) => (j === i ? { ...x, src: e.target.value } : x)),
+                        images: block.images.map((x, j) => (j === i ? { ...x, src: url } : x)),
                       })
                     }
                   />
-                </label>
+                </div>
                 <LocalizedField
                   label="Alt"
                   value={img.alt}
@@ -438,6 +627,153 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
           value={block.heading ?? { en: '', ar: '' }}
           onChange={(v) => onChange({ ...block, heading: v })}
         />
+      );
+
+    case 'testimonials':
+      return (
+        <>
+          <LocalizedField
+            label="Heading"
+            value={block.heading ?? { en: '', ar: '' }}
+            onChange={(v) => onChange({ ...block, heading: v })}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="label">Variant</span>
+              <select
+                className="select"
+                value={block.variant ?? 'cards'}
+                onChange={(e) => onChange({ ...block, variant: e.target.value as 'cards' | 'quote-stack' })}
+              >
+                <option value="cards">Cards grid</option>
+                <option value="quote-stack">Quote stack</option>
+              </select>
+            </label>
+            <label className="block">
+              <span className="label">Limit</span>
+              <input
+                type="number"
+                className="input"
+                value={block.limit ?? 6}
+                onChange={(e) => onChange({ ...block, limit: Number(e.target.value) || undefined })}
+              />
+            </label>
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={block.featuredOnly ?? false}
+              onChange={(e) => onChange({ ...block, featuredOnly: e.target.checked })}
+            />
+            <span className="text-sm">Featured testimonials only</span>
+          </label>
+          <p className="text-[10px] text-muted">Manage entries in the Testimonials page.</p>
+        </>
+      );
+
+    case 'stats':
+      return (
+        <>
+          <LocalizedField
+            label="Heading"
+            value={block.heading ?? { en: '', ar: '' }}
+            onChange={(v) => onChange({ ...block, heading: v })}
+          />
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="label mb-0">Items</span>
+              <button
+                onClick={() => onChange({ ...block, items: [...block.items, { value: '', label: { en: '', ar: '' } }] })}
+                className="btn-ghost text-xs"
+              >
+                + Add
+              </button>
+            </div>
+            {block.items.map((it, i) => (
+              <div key={i} className="border border-ink/10 p-3 mb-2 space-y-2">
+                <div className="flex items-start gap-2">
+                  <label className="block w-32 shrink-0">
+                    <span className="label">Value</span>
+                    <input
+                      className="input font-display text-lg"
+                      placeholder="120+"
+                      value={it.value}
+                      onChange={(e) =>
+                        onChange({ ...block, items: block.items.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)) })
+                      }
+                    />
+                  </label>
+                  <div className="flex-1">
+                    <LocalizedField
+                      label="Label"
+                      value={it.label}
+                      onChange={(v) =>
+                        onChange({ ...block, items: block.items.map((x, j) => (j === i ? { ...x, label: v } : x)) })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => onChange({ ...block, items: block.items.filter((_, x) => x !== i) })}
+                    className="text-xs text-muted hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      );
+
+    case 'video':
+      return (
+        <>
+          <label className="block">
+            <span className="label">Video URL (YouTube / Vimeo / .mp4)</span>
+            <input
+              className="input font-mono text-xs"
+              value={block.url}
+              onChange={(e) => onChange({ ...block, url: e.target.value })}
+            />
+          </label>
+          <label className="block">
+            <span className="label">Poster image URL (for .mp4)</span>
+            <input
+              className="input font-mono text-xs"
+              value={block.poster ?? ''}
+              onChange={(e) => onChange({ ...block, poster: e.target.value })}
+            />
+          </label>
+          <LocalizedField
+            label="Caption"
+            value={block.caption ?? { en: '', ar: '' }}
+            onChange={(v) => onChange({ ...block, caption: v })}
+          />
+        </>
+      );
+
+    case 'embed':
+      return (
+        <>
+          <label className="block">
+            <span className="label">Raw HTML</span>
+            <textarea
+              rows={8}
+              className="textarea"
+              placeholder='<iframe src="…" />'
+              value={block.html}
+              onChange={(e) => onChange({ ...block, html: e.target.value })}
+            />
+            <p className="text-[10px] text-muted mt-1">Renders verbatim. Don&apos;t paste untrusted markup.</p>
+          </label>
+          <LocalizedField
+            label="Caption"
+            value={block.caption ?? { en: '', ar: '' }}
+            onChange={(v) => onChange({ ...block, caption: v })}
+          />
+        </>
       );
 
     default:
@@ -559,5 +895,13 @@ function defaultBlock(type: BlockType): Block {
       return { id, type, words: emptyLoc };
     case 'spacer':
       return { id, type, size: 'md' };
+    case 'testimonials':
+      return { id, type, variant: 'cards', limit: 6 };
+    case 'stats':
+      return { id, type, items: [] };
+    case 'video':
+      return { id, type, url: '' };
+    case 'embed':
+      return { id, type, html: '' };
   }
 }
