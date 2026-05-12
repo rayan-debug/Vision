@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
@@ -213,7 +214,10 @@ export function PageEditor({
       <div className="w-full lg:w-[480px] shrink-0 border-b lg:border-b-0 lg:border-r border-ink/10 bg-surface-50 flex flex-col min-h-screen lg:min-h-0">
         <header className="px-4 md:px-6 py-4 border-b border-ink/10 bg-surface flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] uppercase tracking-widest text-muted">Editing</p>
+            <Link href="/pages" className="text-[11px] text-muted hover:text-accent transition-colors inline-flex items-center gap-1">
+              ← All pages
+            </Link>
+            <p className="text-[10px] uppercase tracking-widest text-muted mt-1">Editing</p>
             <h1 className="font-display text-lg md:text-xl truncate">
               {state.i18n.en?.title || state.slugEn}
             </h1>

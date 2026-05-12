@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import clsx from 'clsx';
@@ -77,11 +78,14 @@ export function ProjectEditor({ project }: { project: Project }) {
   }
 
   return (
-    <div className="p-8 md:p-12 max-w-5xl">
-      <div className="flex items-start justify-between mb-10 gap-4">
+    <div className="p-4 md:p-8 lg:p-12 max-w-5xl">
+      <Link href="/projects" className="text-xs text-muted hover:text-accent transition-colors inline-flex items-center gap-1 mb-3">
+        ← All projects
+      </Link>
+      <div className="flex items-start justify-between mb-8 md:mb-10 gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-accent mb-2">Project</p>
-          <h1 className="font-display text-4xl">{s.i18n.en?.title || s.slugEn}</h1>
+          <h1 className="font-display text-3xl md:text-4xl">{s.i18n.en?.title || s.slugEn}</h1>
         </div>
         <div className="flex gap-2">
           <span className={clsx('tag self-start mt-2', s.status === 'PUBLISHED' ? 'border-accent text-accent' : 'text-muted')}>

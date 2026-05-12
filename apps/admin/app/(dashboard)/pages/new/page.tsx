@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
@@ -106,6 +107,9 @@ export default function NewPage() {
 
   return (
     <div className="p-4 md:p-8 lg:p-12 max-w-5xl">
+      <Link href="/pages" className="text-xs text-muted hover:text-accent transition-colors inline-flex items-center gap-1 mb-3">
+        ← All pages
+      </Link>
       <p className="text-xs uppercase tracking-widest text-accent mb-2">New</p>
       <h1 className="font-display text-3xl md:text-5xl mb-2">Create a page</h1>
       <p className="text-muted mb-8 md:mb-10 max-w-2xl">

@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import clsx from 'clsx';
@@ -63,6 +64,9 @@ export function TemplateEditor({ template }: { template: Template }) {
 
   return (
     <div className="p-4 md:p-8 lg:p-12 max-w-5xl">
+      <Link href="/templates" className="text-xs text-muted hover:text-accent transition-colors inline-flex items-center gap-1 mb-3">
+        ← All templates
+      </Link>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-accent mb-2">Template</p>

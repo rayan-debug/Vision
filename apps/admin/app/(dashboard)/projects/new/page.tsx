@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -35,26 +36,29 @@ export default function NewProject() {
 
   return (
     <div className="p-4 md:p-8 lg:p-12 max-w-2xl">
+      <Link href="/projects" className="text-xs text-muted hover:text-accent transition-colors inline-flex items-center gap-1 mb-3">
+        ← All projects
+      </Link>
       <p className="text-xs uppercase tracking-widest text-accent mb-2">New</p>
-      <h1 className="font-display text-3xl md:text-5xl mb-10">Add a project</h1>
+      <h1 className="font-display text-3xl md:text-5xl mb-8 md:mb-10">Add a project</h1>
       <form onSubmit={onSubmit} className="space-y-5">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <label className="block">
-            <span className="label">Title Â· EN</span>
+            <span className="label">Title · EN</span>
             <input name="titleEn" required className="input" />
           </label>
           <label className="block">
-            <span className="label">Title Â· AR</span>
+            <span className="label">Title · AR</span>
             <input name="titleAr" required className="input" dir="rtl" />
           </label>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <label className="block">
-            <span className="label">Slug Â· EN</span>
+            <span className="label">Slug · EN</span>
             <input name="slugEn" required pattern="[a-z0-9\-]+" className="input font-mono" />
           </label>
           <label className="block">
-            <span className="label">Slug Â· AR</span>
+            <span className="label">Slug · AR</span>
             <input name="slugAr" required pattern="[a-z0-9\-]+" className="input font-mono" />
           </label>
         </div>
@@ -63,13 +67,13 @@ export default function NewProject() {
           <input
             name="category"
             className="input"
-            placeholder="Brand identity, Editorial, Packaging, â€¦"
+            placeholder="Brand identity, Editorial, Packaging, …"
           />
         </label>
         {error && <p className="text-sm text-red-700">{error}</p>}
         <div className="flex gap-3 pt-2">
           <button type="submit" disabled={busy} className="btn-accent">
-            {busy ? 'Creatingâ€¦' : 'Create â†’'}
+            {busy ? 'Creating…' : 'Create →'}
           </button>
           <button type="button" onClick={() => router.back()} className="btn-ghost">Cancel</button>
         </div>
