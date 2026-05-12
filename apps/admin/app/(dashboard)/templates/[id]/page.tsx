@@ -20,6 +20,8 @@ export default async function EditTemplate({ params }: { params: Promise<{ id: s
         order: t.order,
         updatedAt: t.updatedAt.toISOString(),
       }}
+      previewToken={process.env.ADMIN_SESSION_SECRET ?? ''}
+      publicSiteUrl={process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}
     />
   );
 }
