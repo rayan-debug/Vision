@@ -20,6 +20,7 @@ export default async function EditPage({ params }: { params: Promise<{ id: strin
         showInNav: page.showInNav,
         navOrder: page.navOrder,
         ogImage: page.ogImage,
+        noindex: page.noindex,
         updatedAt: page.updatedAt.toISOString(),
       }}
       previewToken={process.env.ADMIN_SESSION_SECRET ?? ''}

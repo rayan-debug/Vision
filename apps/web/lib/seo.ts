@@ -22,6 +22,11 @@ export function pageMetadata(opts: {
   locale: Locale;
   ogImage?: string;
   alternates?: Partial<Record<Locale, string>>;
+  noindex?: boolean;
+  // 'website' (default), 'article' (project pages, blog posts), 'profile'.
+  ogType?: 'website' | 'article' | 'profile';
+  publishedTime?: string;
+  modifiedTime?: string;
 }): Metadata {
   const url = siteUrl(opts.path);
   const languages: Record<string, string> = {};
@@ -29,18 +34,33 @@ export function pageMetadata(opts: {
     for (const [loc, p] of Object.entries(opts.alternates)) {
       if (p) languages[bcp47(loc as Locale)] = siteUrl(p);
     }
+    // x-default — used by Google when no hreflang matches the user's
+    // language; point it at the default locale.
+    const enPath = opts.alternates.en;
+    if (enPath) languages['x-default'] = siteUrl(enPath);
   }
+  const ogType = opts.ogType ?? 'website';
   return {
     title: opts.title,
     description: opts.description,
     keywords: opts.keywords,
     alternates: { canonical: url, languages },
+    robots: opts.noindex
+      ? { index: false, follow: false, googleBot: { index: false, follow: false } }
+      : { index: true, follow: true },
     openGraph: {
+      type: ogType,
       title: opts.title,
       description: opts.description,
       url,
       locale: ogLocale(opts.locale),
       images: opts.ogImage ? [{ url: opts.ogImage }] : [],
+      ...(ogType === 'article'
+        ? {
+            publishedTime: opts.publishedTime,
+            modifiedTime: opts.modifiedTime,
+          }
+        : {}),
     },
     twitter: {
       card: 'summary_large_image',

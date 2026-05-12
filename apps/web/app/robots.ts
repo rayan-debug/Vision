@@ -8,20 +8,36 @@ const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: '*', allow: '/' },
+      { userAgent: '*', allow: '/', disallow: ['/api/', '/preview/'] },
       { userAgent: 'Googlebot', allow: '/' },
       { userAgent: 'Google-Extended', allow: '/' },
       { userAgent: 'Bingbot', allow: '/' },
+      { userAgent: 'DuckDuckBot', allow: '/' },
+      // OpenAI
       { userAgent: 'GPTBot', allow: '/' },
       { userAgent: 'OAI-SearchBot', allow: '/' },
       { userAgent: 'ChatGPT-User', allow: '/' },
+      // Anthropic
       { userAgent: 'ClaudeBot', allow: '/' },
+      { userAgent: 'Claude-Web', allow: '/' },
       { userAgent: 'anthropic-ai', allow: '/' },
+      // Perplexity
       { userAgent: 'PerplexityBot', allow: '/' },
       { userAgent: 'Perplexity-User', allow: '/' },
+      // Apple
       { userAgent: 'Applebot', allow: '/' },
       { userAgent: 'Applebot-Extended', allow: '/' },
+      // Common Crawl (powers many AI training corpora)
       { userAgent: 'CCBot', allow: '/' },
+      // Mistral, Meta, You.com, Cohere
+      { userAgent: 'MistralAI-User', allow: '/' },
+      { userAgent: 'meta-externalagent', allow: '/' },
+      { userAgent: 'FacebookBot', allow: '/' },
+      { userAgent: 'YouBot', allow: '/' },
+      { userAgent: 'cohere-ai', allow: '/' },
+      // Yandex, Baidu — for international reach
+      { userAgent: 'YandexBot', allow: '/' },
+      { userAgent: 'Baiduspider', allow: '/' },
     ],
     sitemap: `${BASE}/sitemap.xml`,
     host: BASE,

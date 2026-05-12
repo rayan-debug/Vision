@@ -38,6 +38,10 @@ model Page {
   i18n        Json
   blocks      Json       @default("[]")
   ogImage     String?
+  // When true, the page is published but emits noindex/nofollow so search
+  // engines (and AI crawlers) skip it. Use for thank-you pages, internal
+  // links, etc.
+  noindex     Boolean    @default(false)
   status      PageStatus @default(DRAFT)
   isHome      Boolean    @default(false)
   showInNav   Boolean    @default(true)
@@ -135,6 +139,12 @@ model SiteSettings {
   // web app when set; leave blank to disable.
   gaId             String?  // e.g. "G-XXXXXXX"
   plausibleDomain  String?  // e.g. "thevision.studio"
+  // Search-console verification meta values. Each emits a <meta name="…"
+  // content="…"> in <head> when set. Required to claim the site in each
+  // engine's webmaster tools.
+  googleVerification    String?
+  bingVerification      String?
+  yandexVerification    String?
   // Free-form CSS appended to the public site's <head>. Use for one-off tweaks
   // without redeploying.
   customCss        String?  @db.Text

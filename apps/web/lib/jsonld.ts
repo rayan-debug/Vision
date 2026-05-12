@@ -96,6 +96,126 @@ export function breadcrumbLd(items: { name: string; url: string }[]): Json {
   };
 }
 
+// WebSite with a SearchAction tells Google to render the sitelinks searchbox
+// in the SERP. Even when the site doesn't have its own search page yet, this
+// is required for the Person/Organization knowledge panel to anchor to.
+export function websiteLd(opts: {
+  name: string;
+  url: string;
+  description: string;
+  searchUrlTemplate?: string;
+  inLanguage: string;
+}): Json {
+  const ld: Json = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: opts.name,
+    url: opts.url,
+    description: opts.description,
+    inLanguage: opts.inLanguage,
+  };
+  if (opts.searchUrlTemplate) {
+    ld.potentialAction = {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: opts.searchUrlTemplate,
+      },
+      'query-input': 'required name=search_term_string',
+    };
+  }
+  return ld;
+}
+
+// ItemList is what AI engines and Google use to enumerate the projects index
+// page. Each item references the project's own URL so detail-page schema can
+// be picked up via the link.
+export function itemListLd(opts: {
+  name: string;
+  url: string;
+  items: { name: string; url: string; image?: string; description?: string }[];
+}): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: opts.name,
+    url: opts.url,
+    numberOfItems: opts.items.length,
+    itemListElement: opts.items.map((it, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: it.url,
+      name: it.name,
+      ...(it.image ? { image: it.image } : {}),
+      ...(it.description ? { description: it.description } : {}),
+    })),
+  };
+}
+
+// ProfilePage wraps the home page when its purpose is to introduce a person /
+// studio. AI engines surface this as a citation anchor for "who is X" queries.
+export function profilePageLd(opts: {
+  name: string;
+  url: string;
+  description: string;
+  mainEntityName: string;
+  mainEntityUrl: string;
+  inLanguage: string;
+}): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    name: opts.name,
+    url: opts.url,
+    description: opts.description,
+    inLanguage: opts.inLanguage,
+    mainEntityOfPage: { '@type': 'Person', name: opts.mainEntityName, url: opts.mainEntityUrl },
+  };
+}
+
+// Article — used on project detail and any long-form/blog page.
+export function articleLd(opts: {
+  headline: string;
+  description: string;
+  url: string;
+  image: string;
+  author: string;
+  datePublished?: string;
+  dateModified?: string;
+  inLanguage: string;
+  keywords?: string[];
+  articleSection?: string;
+}): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: opts.headline,
+    description: opts.description,
+    image: opts.image,
+    url: opts.url,
+    author: { '@type': 'Person', name: opts.author },
+    publisher: { '@type': 'Person', name: opts.author },
+    datePublished: opts.datePublished,
+    dateModified: opts.dateModified ?? opts.datePublished,
+    inLanguage: opts.inLanguage,
+    articleSection: opts.articleSection,
+    keywords: opts.keywords?.join(', '),
+  };
+}
+
+// Speakable hints AI engines about which selectors hold the answer-worthy
+// text. Used on FAQ-rich pages so voice/AI summaries pick the right chunks.
+export function speakableLd(cssSelectors: string[]): Json {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: cssSelectors,
+    },
+  };
+}
+
 // Component renders a list of <script type="application/ld+json"> tags.
 // Uses createElement instead of JSX so this file can stay .ts.
 export function JsonLd({ data }: { data: Json | Json[] }) {

@@ -16,6 +16,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (typeof body.showInNav === 'boolean') data.showInNav = body.showInNav;
   if (typeof body.navOrder === 'number') data.navOrder = body.navOrder;
   if (typeof body.isHome === 'boolean') data.isHome = body.isHome;
+  if (typeof body.noindex === 'boolean') data.noindex = body.noindex;
 
   if (body.status === 'PUBLISHED' || body.status === 'DRAFT') {
     data.status = body.status;

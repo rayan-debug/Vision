@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma, isLocale, type Locale } from '@roua/db';
 import { pageMetadata } from '@/lib/seo';
-import { JsonLd, creativeWorkLd, breadcrumbLd } from '@/lib/jsonld';
+import { JsonLd, creativeWorkLd, articleLd, breadcrumbLd } from '@/lib/jsonld';
 
 async function findProject(slug: string) {
   return prisma.project.findFirst({
@@ -28,6 +28,9 @@ export async function generateMetadata({
     path: `/${locale}/projects/${slug}`,
     locale,
     ogImage: project.coverImage,
+    ogType: 'article',
+    publishedTime: project.publishedAt?.toISOString(),
+    modifiedTime: project.updatedAt.toISOString(),
     alternates: {
       en: `/en/projects/${project.slugEn}`,
       ar: `/ar/projects/${project.slugAr}`,
@@ -72,8 +75,20 @@ export default async function ProjectDetail({
             datePublished: project.publishedAt?.toISOString(),
             keywords: project.tags,
           }),
+          articleLd({
+            headline: meta?.title ?? '',
+            description: meta?.description ?? '',
+            url,
+            image: project.coverImage,
+            author: 'Roua Bou Ghanem',
+            datePublished: project.publishedAt?.toISOString(),
+            dateModified: project.updatedAt.toISOString(),
+            inLanguage: locale === 'ar' ? 'ar' : 'en',
+            keywords: project.tags,
+            articleSection: project.category ?? undefined,
+          }),
           breadcrumbLd([
-            { name: 'Home', url: `${baseUrl}/${locale}` },
+            { name: locale === 'ar' ? 'الرئيسية' : 'Home', url: `${baseUrl}/${locale}` },
             { name: locale === 'ar' ? 'الأعمال' : 'Work', url: `${baseUrl}/${locale}/projects` },
             { name: meta?.title ?? slug, url },
           ]),

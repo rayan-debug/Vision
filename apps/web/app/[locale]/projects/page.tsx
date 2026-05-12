@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma, isLocale } from '@roua/db';
 import { pageMetadata } from '@/lib/seo';
+import { JsonLd, itemListLd, breadcrumbLd } from '@/lib/jsonld';
 
 export async function generateMetadata({
   params,
@@ -38,9 +39,33 @@ export default async function ProjectsIndex({
   });
 
   const categories = Array.from(new Set(projects.map((p) => p.category).filter(Boolean) as string[]));
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const indexUrl = `${baseUrl}/${locale}/projects`;
 
   return (
     <>
+      <JsonLd
+        data={[
+          itemListLd({
+            name: locale === 'ar' ? 'الأعمال' : 'Work',
+            url: indexUrl,
+            items: projects.map((p) => {
+              const meta = (p.i18n as Record<string, { title: string; description: string }>)[locale];
+              const slug = locale === 'ar' ? p.slugAr : p.slugEn;
+              return {
+                name: meta?.title ?? p.slugEn,
+                url: `${baseUrl}/${locale}/projects/${slug}`,
+                image: p.coverImage,
+                description: meta?.description,
+              };
+            }),
+          }),
+          breadcrumbLd([
+            { name: locale === 'ar' ? 'الرئيسية' : 'Home', url: `${baseUrl}/${locale}` },
+            { name: locale === 'ar' ? 'الأعمال' : 'Work', url: indexUrl },
+          ]),
+        ]}
+      />
       <section className="px-6 md:px-10 pt-40 pb-12">
         <p className="text-xs uppercase tracking-[0.3em] text-accent mb-6">
           ◆ {locale === 'ar' ? 'مختارات من الأعمال' : 'Selected work'}

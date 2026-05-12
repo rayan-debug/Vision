@@ -7,6 +7,8 @@ import {
   personLd,
   organizationLd,
   breadcrumbLd,
+  websiteLd,
+  profilePageLd,
 } from '@/lib/jsonld';
 
 export async function generateMetadata({
@@ -61,19 +63,42 @@ export default async function HomePage({
     settings?.dribbble,
     settings?.linkedin,
     settings?.twitter,
+    settings?.youtube,
+    settings?.tiktok,
+    settings?.pinterest,
   ].filter((x): x is string => !!x);
+
+  const tagline =
+    (settings?.i18n as Record<string, { tagline?: string }> | undefined)?.[locale]?.tagline ?? '';
+  const lang = locale === 'ar' ? 'ar' : 'en';
 
   return (
     <>
       <JsonLd
         data={[
+          websiteLd({
+            name: siteName,
+            url: `${baseUrl}/${locale}`,
+            description: tagline || bio,
+            // Sitelinks searchbox — Google renders this when present.
+            // Replace with a real search route if/when we add one.
+            inLanguage: lang,
+          }),
+          profilePageLd({
+            name: siteName,
+            url: `${baseUrl}/${locale}`,
+            description: bio,
+            mainEntityName: 'Roua Bou Ghanem',
+            mainEntityUrl: `${baseUrl}/${locale}`,
+            inLanguage: lang,
+          }),
           personLd({
             name: 'Roua Bou Ghanem',
             jobTitle: locale === 'ar' ? 'مصمّمة جرافيك' : 'Graphic Designer',
             url: `${baseUrl}/${locale}`,
             description: bio,
             sameAs: socials,
-            image: page.ogImage ?? undefined,
+            image: page.ogImage ?? settings?.logoUrl ?? undefined,
           }),
           organizationLd({
             name: siteName,
@@ -84,7 +109,7 @@ export default async function HomePage({
             areaServed: 'Worldwide',
             logo: settings?.logoUrl ?? undefined,
           }),
-          breadcrumbLd([{ name: 'Home', url: `${baseUrl}/${locale}` }]),
+          breadcrumbLd([{ name: locale === 'ar' ? 'الرئيسية' : 'Home', url: `${baseUrl}/${locale}` }]),
         ]}
       />
       <BlockRenderer blocks={blocks} locale={locale} />

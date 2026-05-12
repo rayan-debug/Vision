@@ -33,6 +33,7 @@ export async function generateMetadata({
     locale,
     ogImage: page.ogImage ?? undefined,
     alternates: { en: `/en/${page.slugEn}`, ar: `/ar/${page.slugAr}` },
+    noindex: page.noindex,
   });
 }
 

@@ -18,6 +18,7 @@ type Page = {
   showInNav: boolean;
   navOrder: number;
   ogImage: string | null;
+  noindex: boolean;
   updatedAt: string;
 };
 
@@ -69,6 +70,7 @@ export function PageEditor({
       navOrder: state.navOrder,
       isHome: state.isHome,
       ogImage: state.ogImage,
+      noindex: state.noindex,
       status: opts.publish ? 'PUBLISHED' : opts.unpublish ? 'DRAFT' : undefined,
     };
     const res = await fetch(`/api/pages/${state.id}`, {
@@ -201,6 +203,23 @@ export function PageEditor({
                   className="input"
                   placeholder="https://…"
                 />
+                <span className="text-[10px] text-muted mt-1 block">
+                  Used by Google, social, and AI search previews. Leave blank to fall back to the site-wide default in Settings.
+                </span>
+              </label>
+              <label className="flex items-start gap-2 cursor-pointer pt-2 border-t border-ink/10">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={state.noindex}
+                  onChange={(e) => update('noindex', e.target.checked)}
+                />
+                <span className="text-sm">
+                  Hide from search engines (<code>noindex</code>)
+                  <span className="block text-[10px] text-muted mt-0.5">
+                    Page stays publicly reachable but Google, Bing, and AI crawlers skip it. Use for thank-you pages, internal links, or drafts you don&apos;t want surfaced.
+                  </span>
+                </span>
               </label>
             </div>
           )}

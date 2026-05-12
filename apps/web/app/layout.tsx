@@ -39,6 +39,11 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     icons: { icon: settings?.faviconUrl ?? '/favicon.ico' },
     robots: { index: true, follow: true },
+    verification: {
+      ...(settings?.googleVerification ? { google: settings.googleVerification } : {}),
+      ...(settings?.bingVerification ? { other: { 'msvalidate.01': settings.bingVerification } } : {}),
+      ...(settings?.yandexVerification ? { yandex: settings.yandexVerification } : {}),
+    },
   };
 }
 

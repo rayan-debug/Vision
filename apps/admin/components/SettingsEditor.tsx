@@ -28,6 +28,9 @@ type Settings = {
   gaId: string | null;
   plausibleDomain: string | null;
   customCss: string | null;
+  googleVerification: string | null;
+  bingVerification: string | null;
+  yandexVerification: string | null;
   navLabels: NavLabels | null;
   displayFont: string | null;
   bodyFont: string | null;
@@ -528,32 +531,73 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
         )}
 
         {tab === 'analytics' && (
-          <section className="card">
-            <h2 className="font-display text-xl mb-1">Analytics</h2>
-            <p className="text-xs text-muted mb-5">
-              Each is opt-in. Leave blank to skip injection on the public site.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <label className="block">
-                <span className="label">Google Analytics ID</span>
-                <input
-                  className="input font-mono"
-                  placeholder="G-XXXXXXXXXX"
-                  value={s.gaId ?? ''}
-                  onChange={(e) => u('gaId', e.target.value.trim())}
-                />
-              </label>
-              <label className="block">
-                <span className="label">Plausible domain</span>
-                <input
-                  className="input font-mono"
-                  placeholder="thevision.studio"
-                  value={s.plausibleDomain ?? ''}
-                  onChange={(e) => u('plausibleDomain', e.target.value.trim())}
-                />
-              </label>
-            </div>
-          </section>
+          <>
+            <section className="card">
+              <h2 className="font-display text-xl mb-1">Analytics</h2>
+              <p className="text-xs text-muted mb-5">
+                Each is opt-in. Leave blank to skip injection on the public site.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="label">Google Analytics ID</span>
+                  <input
+                    className="input font-mono"
+                    placeholder="G-XXXXXXXXXX"
+                    value={s.gaId ?? ''}
+                    onChange={(e) => u('gaId', e.target.value.trim())}
+                  />
+                </label>
+                <label className="block">
+                  <span className="label">Plausible domain</span>
+                  <input
+                    className="input font-mono"
+                    placeholder="thevision.studio"
+                    value={s.plausibleDomain ?? ''}
+                    onChange={(e) => u('plausibleDomain', e.target.value.trim())}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section className="card">
+              <h2 className="font-display text-xl mb-1">Search-console verification</h2>
+              <p className="text-xs text-muted mb-5">
+                Paste the verification code each webmaster console asks for. Each injects a meta tag in <code>&lt;head&gt;</code>. Required to claim the site and see indexing data.
+              </p>
+              <div className="grid grid-cols-1 gap-3">
+                <label className="block">
+                  <span className="label">Google Search Console</span>
+                  <input
+                    className="input font-mono"
+                    placeholder="abc123…"
+                    value={s.googleVerification ?? ''}
+                    onChange={(e) => u('googleVerification', e.target.value.trim())}
+                  />
+                  <span className="text-[10px] text-muted mt-1 block">
+                    From Google Search Console → Settings → HTML tag. Paste only the <code>content</code> value.
+                  </span>
+                </label>
+                <label className="block">
+                  <span className="label">Bing Webmaster Tools</span>
+                  <input
+                    className="input font-mono"
+                    placeholder="abc123…"
+                    value={s.bingVerification ?? ''}
+                    onChange={(e) => u('bingVerification', e.target.value.trim())}
+                  />
+                </label>
+                <label className="block">
+                  <span className="label">Yandex Webmaster</span>
+                  <input
+                    className="input font-mono"
+                    placeholder="abc123…"
+                    value={s.yandexVerification ?? ''}
+                    onChange={(e) => u('yandexVerification', e.target.value.trim())}
+                  />
+                </label>
+              </div>
+            </section>
+          </>
         )}
 
         {tab === 'advanced' && (
