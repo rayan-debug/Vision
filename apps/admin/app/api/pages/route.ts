@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getTemplate, prisma } from '@roua/db';
+import { prisma } from '@roua/db';
 import { requireSession } from '@/lib/session';
 
 export async function POST(req: Request) {
@@ -9,7 +9,6 @@ export async function POST(req: Request) {
   const titleAr = String(body.titleAr ?? '').trim();
   const slugEn = String(body.slugEn ?? '').trim().toLowerCase();
   const slugAr = String(body.slugAr ?? '').trim().toLowerCase();
-  const templateId = typeof body.templateId === 'string' ? body.templateId : 'blank';
 
   if (!titleEn || !titleAr || !slugEn || !slugAr) {
     return NextResponse.json({ error: 'All fields required.' }, { status: 400 });
@@ -18,8 +17,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Slugs must be lowercase letters, numbers, and dashes.' }, { status: 400 });
   }
 
-  const template = getTemplate(templateId);
-  const blocks = template ? template.build() : [];
+  // The form may send `blocks` (the user's customized block list, possibly
+  // derived from a template) or `templateId` (apply a stored template as-is).
+  let blocks: unknown[] = [];
+  if (Array.isArray(body.blocks)) {
+    blocks = body.blocks;
+  } else if (typeof body.templateId === 'string' && body.templateId) {
+    const template = await prisma.pageTemplate.findUnique({ where: { id: body.templateId } });
+    if (template) blocks = template.blocks as unknown[];
+  }
 
   try {
     const page = await prisma.page.create({

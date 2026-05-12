@@ -1,7 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { randomId } from '@/lib/id';
-import { LOCALES, PAGE_TEMPLATES, type Block, type BlockType, type Locale } from '@roua/db';
+import { LOCALES, type Block, type BlockType, type Locale } from '@roua/db';
 import { MediaPicker } from './MediaPicker';
 
 type Props = {
@@ -10,8 +10,32 @@ type Props = {
   blockTypes: { type: BlockType; label: string; description: string }[];
 };
 
+type EmptyTemplate = { id: string; name: string; description: string; blocks: Block[] };
+
 export function BlockList({ blocks, onChange, blockTypes }: Props) {
   const [adding, setAdding] = useState(false);
+  const [emptyTemplates, setEmptyTemplates] = useState<EmptyTemplate[] | null>(null);
+
+  // Fetch DB templates only when the page is empty — gives the editor a
+  // one-click way to start from a layout without leaving the page editor.
+  useEffect(() => {
+    if (blocks.length !== 0 || emptyTemplates !== null) return;
+    fetch('/api/templates')
+      .then((r) => r.json())
+      .then((j: { items?: { id: string; name: string; description: string; blocks: unknown }[] }) => {
+        setEmptyTemplates(
+          (j.items ?? [])
+            .filter((t) => Array.isArray(t.blocks) && (t.blocks as unknown[]).length > 0)
+            .map((t) => ({
+              id: t.id,
+              name: t.name,
+              description: t.description ?? '',
+              blocks: t.blocks as Block[],
+            })),
+        );
+      })
+      .catch(() => setEmptyTemplates([]));
+  }, [blocks.length, emptyTemplates]);
 
   function update(i: number, next: Block) {
     const copy = blocks.slice();
@@ -56,19 +80,19 @@ export function BlockList({ blocks, onChange, blockTypes }: Props) {
         />
       ))}
 
-      {blocks.length === 0 && !adding && (
+      {blocks.length === 0 && !adding && emptyTemplates && emptyTemplates.length > 0 && (
         <div className="border border-dashed border-ink/15 bg-surface p-5">
           <p className="text-xs uppercase tracking-widest text-muted mb-3">Start from a template</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {PAGE_TEMPLATES.filter((t) => t.id !== 'blank').map((t) => (
+            {emptyTemplates.slice(0, 6).map((t) => (
               <button
                 key={t.id}
                 type="button"
-                onClick={() => onChange(t.build())}
+                onClick={() => onChange(JSON.parse(JSON.stringify(t.blocks)))}
                 className="text-left border border-ink/10 hover:border-accent hover:bg-surface-100 transition-colors p-3"
               >
                 <p className="font-medium text-sm">{t.name}</p>
-                <p className="text-[11px] text-muted leading-snug mt-0.5">{t.description}</p>
+                <p className="text-[11px] text-muted leading-snug mt-0.5 line-clamp-2">{t.description}</p>
               </button>
             ))}
           </div>

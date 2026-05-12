@@ -190,6 +190,29 @@ model Inquiry {
   @@index([status, createdAt])
 }
 
+// Reusable page templates. Each is a saved set of blocks the admin can drop
+// into a new page as a starting point. Pre-seeded "starter" templates can be
+// edited or deleted; admins can also save their own.
+model PageTemplate {
+  id          String   @id @default(cuid())
+  // Short slug-like identifier (auto-generated, unique). Used by the legacy
+  // hardcoded templates and for stable references.
+  key         String   @unique
+  name        String
+  description String   @default("")
+  // ASCII preview shown in the picker — e.g. a 6-line outline of the layout.
+  preview     String   @default("")
+  blocks      Json     @default("[]")
+  // Pre-seeded vs user-created — both are editable, but starter templates can
+  // be reseeded from `npm run seed:templates`.
+  isStarter   Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+}
+
 // Client testimonials for use in pages via the "testimonials" block.
 model Testimonial {
   id          String   @id @default(cuid())

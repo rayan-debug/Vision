@@ -10,6 +10,7 @@
     "migrate": "dotenv -e ../../.env -- prisma migrate dev",
     "studio": "dotenv -e ../../.env -- prisma studio",
     "seed": "dotenv -e ../../.env -- tsx prisma/seed.ts",
+    "seed:templates": "dotenv -e ../../.env -- tsx prisma/seed-templates.ts",
     "build": "dotenv -e ../../.env -- prisma generate"
   },
   "prisma": {
