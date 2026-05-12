@@ -14,7 +14,35 @@ type EmptyTemplate = { id: string; name: string; description: string; blocks: Bl
 
 export function BlockList({ blocks, onChange, blockTypes }: Props) {
   const [adding, setAdding] = useState(false);
+  const [addFilter, setAddFilter] = useState('');
   const [emptyTemplates, setEmptyTemplates] = useState<EmptyTemplate[] | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dropIndex, setDropIndex] = useState<number | null>(null);
+
+  const filteredBlockTypes = blockTypes.filter((t) => {
+    if (!addFilter) return true;
+    const q = addFilter.toLowerCase();
+    return t.label.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || t.type.includes(q);
+  });
+
+  function onDragStart(i: number) {
+    setDragIndex(i);
+  }
+  function onDragOverItem(e: React.DragEvent, i: number) {
+    e.preventDefault();
+    if (dragIndex === null) return;
+    setDropIndex(i);
+  }
+  function onDragEnd() {
+    if (dragIndex !== null && dropIndex !== null && dragIndex !== dropIndex) {
+      const copy = blocks.slice();
+      const [item] = copy.splice(dragIndex, 1);
+      copy.splice(dropIndex, 0, item);
+      onChange(copy);
+    }
+    setDragIndex(null);
+    setDropIndex(null);
+  }
 
   // Fetch DB templates only when the page is empty — gives the editor a
   // one-click way to start from a layout without leaving the page editor.
@@ -68,16 +96,24 @@ export function BlockList({ blocks, onChange, blockTypes }: Props) {
   return (
     <div className="space-y-3">
       {blocks.map((b, i) => (
-        <BlockCard
+        <div
           key={b.id}
-          block={b}
-          index={i}
-          last={i === blocks.length - 1}
-          onChange={(nb) => update(i, nb)}
-          onMove={(d) => move(i, d)}
-          onRemove={() => remove(i)}
-          onDuplicate={() => duplicate(i)}
-        />
+          onDragOver={(e) => onDragOverItem(e, i)}
+          className={dropIndex === i && dragIndex !== null && dragIndex !== i ? 'ring-2 ring-accent ring-offset-2 ring-offset-surface-50' : ''}
+        >
+          <BlockCard
+            block={b}
+            index={i}
+            last={i === blocks.length - 1}
+            dragging={dragIndex === i}
+            onChange={(nb) => update(i, nb)}
+            onMove={(d) => move(i, d)}
+            onRemove={() => remove(i)}
+            onDuplicate={() => duplicate(i)}
+            onDragStart={() => onDragStart(i)}
+            onDragEnd={onDragEnd}
+          />
+        </div>
       ))}
 
       {blocks.length === 0 && !adding && emptyTemplates && emptyTemplates.length > 0 && (
@@ -109,21 +145,42 @@ export function BlockList({ blocks, onChange, blockTypes }: Props) {
       )}
       {adding && (
         <div className="border border-ink/15 bg-surface p-4">
-          <p className="text-xs uppercase tracking-widest text-muted mb-3">Choose a block</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {blockTypes.map((t) => (
-              <button
-                key={t.type}
-                onClick={() => add(t.type)}
-                className="text-left px-3 py-2 border border-ink/10 hover:border-accent hover:bg-surface-100 transition-colors group"
-              >
-                <p className="text-sm font-medium group-hover:text-accent">{t.label}</p>
-                <p className="text-[11px] text-muted leading-snug mt-0.5">{t.description}</p>
-              </button>
-            ))}
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <p className="text-xs uppercase tracking-widest text-muted">Choose a block</p>
+            <input
+              autoFocus
+              type="text"
+              placeholder="Search…"
+              className="input max-w-[180px] text-xs"
+              value={addFilter}
+              onChange={(e) => setAddFilter(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') { setAdding(false); setAddFilter(''); }
+                if (e.key === 'Enter' && filteredBlockTypes.length === 1) {
+                  add(filteredBlockTypes[0].type);
+                  setAddFilter('');
+                }
+              }}
+            />
           </div>
+          {filteredBlockTypes.length === 0 ? (
+            <p className="text-xs text-muted py-4 text-center">No blocks match &ldquo;{addFilter}&rdquo;</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {filteredBlockTypes.map((t) => (
+                <button
+                  key={t.type}
+                  onClick={() => { add(t.type); setAddFilter(''); }}
+                  className="text-left px-3 py-2 border border-ink/10 hover:border-accent hover:bg-surface-100 transition-colors group"
+                >
+                  <p className="text-sm font-medium group-hover:text-accent">{t.label}</p>
+                  <p className="text-[11px] text-muted leading-snug mt-0.5">{t.description}</p>
+                </button>
+              ))}
+            </div>
+          )}
           <button
-            onClick={() => setAdding(false)}
+            onClick={() => { setAdding(false); setAddFilter(''); }}
             className="mt-3 text-xs text-muted hover:text-ink"
           >
             Cancel
@@ -158,25 +215,56 @@ function BlockCard({
   block,
   index,
   last,
+  dragging,
   onChange,
   onMove,
   onRemove,
   onDuplicate,
+  onDragStart,
+  onDragEnd,
 }: {
   block: Block;
   index: number;
   last: boolean;
+  dragging: boolean;
   onChange: (b: Block) => void;
   onMove: (d: -1 | 1) => void;
   onRemove: () => void;
   onDuplicate: () => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [styleOpen, setStyleOpen] = useState(false);
 
   return (
-    <div className="border border-ink/15 bg-surface">
+    <div
+      draggable
+      onDragStart={(e) => {
+        // Use a transparent drag image so the highlight ring carries the
+        // visual feedback. Without this, the cursor drags the whole card
+        // including the editor body which is heavy and clips weirdly.
+        const ghost = document.createElement('div');
+        ghost.style.width = '1px';
+        ghost.style.height = '1px';
+        ghost.style.opacity = '0';
+        document.body.appendChild(ghost);
+        e.dataTransfer.setDragImage(ghost, 0, 0);
+        setTimeout(() => document.body.removeChild(ghost), 0);
+        e.dataTransfer.effectAllowed = 'move';
+        onDragStart();
+      }}
+      onDragEnd={onDragEnd}
+      className={`border border-ink/15 bg-surface transition-opacity ${dragging ? 'opacity-40' : ''}`}
+    >
       <div className="flex items-center justify-between px-3 py-2 bg-surface-100 border-b border-ink/10 gap-2">
+        <span
+          className="cursor-grab active:cursor-grabbing text-muted hover:text-ink shrink-0 select-none px-1"
+          title="Drag to reorder"
+          aria-hidden
+        >
+          ⋮⋮
+        </span>
         <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2 text-sm font-medium min-w-0 flex-1 text-left">
           <span className="text-muted text-xs shrink-0">{String(index + 1).padStart(2, '0')}</span>
           <span className={`shrink-0 ${open ? 'text-accent' : ''}`}>{open ? '▾' : '▸'}</span>

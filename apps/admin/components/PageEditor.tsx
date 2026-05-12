@@ -1,9 +1,17 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { BlockList } from './BlockList';
+import { SeoHealth } from './SeoHealth';
 import { BLOCK_TYPES, LOCALES, type Block, type Locale } from '@roua/db';
+
+type Device = 'desktop' | 'tablet' | 'mobile';
+const DEVICE_WIDTH: Record<Device, string> = {
+  desktop: '100%',
+  tablet: '768px',
+  mobile: '390px',
+};
 
 type Meta = { title: string; description?: string; keywords?: string };
 
@@ -39,24 +47,114 @@ export function PageEditor({
   const [previewLocale, setPreviewLocale] = useState<Locale>('en');
   const [tab, setTab] = useState<'content' | 'seo' | 'settings'>('content');
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [device, setDevice] = useState<Device>('desktop');
+
+  // Undo/redo history. The current state always lives at history[index].
+  // History is in-memory only and resets on reload — that's fine: it's a
+  // "undo recent typing" tool, not version control.
+  const historyRef = useRef<Page[]>([page]);
+  const indexRef = useRef(0);
+  const [historyVersion, setHistoryVersion] = useState(0);
+  const HISTORY_LIMIT = 80;
+
+  const pushHistory = useCallback((next: Page) => {
+    const h = historyRef.current.slice(0, indexRef.current + 1);
+    h.push(next);
+    // Cap memory: drop oldest entries past the limit.
+    while (h.length > HISTORY_LIMIT) h.shift();
+    historyRef.current = h;
+    indexRef.current = h.length - 1;
+    setHistoryVersion((v) => v + 1);
+  }, []);
+
+  const commit = useCallback((nextState: Page) => {
+    setState(nextState);
+    setDirty(true);
+    pushHistory(nextState);
+  }, [pushHistory]);
 
   const update = useCallback(<K extends keyof Page>(key: K, value: Page[K]) => {
-    setState((s) => ({ ...s, [key]: value }));
+    setState((prev) => {
+      const next = { ...prev, [key]: value };
+      pushHistory(next);
+      return next;
+    });
     setDirty(true);
-  }, []);
+  }, [pushHistory]);
 
   const updateI18n = useCallback((locale: Locale, key: keyof Meta, value: string) => {
-    setState((s) => ({
-      ...s,
-      i18n: { ...s.i18n, [locale]: { ...(s.i18n[locale] ?? { title: '' }), [key]: value } },
-    }));
+    setState((prev) => {
+      const next = {
+        ...prev,
+        i18n: { ...prev.i18n, [locale]: { ...(prev.i18n[locale] ?? { title: '' }), [key]: value } },
+      };
+      pushHistory(next);
+      return next;
+    });
+    setDirty(true);
+  }, [pushHistory]);
+
+  const updateBlocks = useCallback((blocks: Block[]) => {
+    setState((prev) => {
+      const next = { ...prev, blocks: blocks as unknown as unknown[] };
+      pushHistory(next);
+      return next;
+    });
+    setDirty(true);
+  }, [pushHistory]);
+
+  const canUndo = indexRef.current > 0;
+  const canRedo = indexRef.current < historyRef.current.length - 1;
+
+  const undo = useCallback(() => {
+    if (indexRef.current <= 0) return;
+    indexRef.current -= 1;
+    setState(historyRef.current[indexRef.current]);
+    setHistoryVersion((v) => v + 1);
     setDirty(true);
   }, []);
 
-  const updateBlocks = useCallback((blocks: Block[]) => {
-    setState((s) => ({ ...s, blocks: blocks as unknown as unknown[] }));
+  const redo = useCallback(() => {
+    if (indexRef.current >= historyRef.current.length - 1) return;
+    indexRef.current += 1;
+    setState(historyRef.current[indexRef.current]);
+    setHistoryVersion((v) => v + 1);
     setDirty(true);
   }, []);
+
+  // Warn before leaving with unsaved changes.
+  useEffect(() => {
+    if (!dirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [dirty]);
+
+  const saveRef = useRef<((opts?: { publish?: boolean; unpublish?: boolean }) => void) | null>(null);
+
+  // Keyboard shortcuts: Cmd/Ctrl+S, Cmd/Ctrl+Z, Cmd/Ctrl+Shift+Z.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod) return;
+      const key = e.key.toLowerCase();
+      if (key === 's') {
+        e.preventDefault();
+        saveRef.current?.();
+      } else if (key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((key === 'z' && e.shiftKey) || key === 'y') {
+        e.preventDefault();
+        redo();
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [undo, redo]);
 
   async function save(opts: { publish?: boolean; unpublish?: boolean } = {}) {
     setBusy(true);
@@ -89,6 +187,7 @@ export function PageEditor({
       setError(b.error ?? 'Save failed.');
     }
   }
+  saveRef.current = save;
 
   async function destroy() {
     if (!confirm('Delete this page permanently?')) return;
@@ -116,7 +215,25 @@ export function PageEditor({
               {state.i18n.en?.title || state.slugEn}
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={undo}
+              disabled={!canUndo}
+              title="Undo (Ctrl/Cmd+Z)"
+              className="btn-ghost text-xs px-2 py-1 disabled:opacity-30"
+              aria-label="Undo"
+            >
+              ↶
+            </button>
+            <button
+              onClick={redo}
+              disabled={!canRedo}
+              title="Redo (Ctrl/Cmd+Shift+Z)"
+              className="btn-ghost text-xs px-2 py-1 disabled:opacity-30"
+              aria-label="Redo"
+            >
+              ↷
+            </button>
             <span
               className={clsx(
                 'tag',
@@ -161,6 +278,17 @@ export function PageEditor({
 
           {tab === 'seo' && (
             <div className="space-y-6">
+              <SeoHealth
+                page={{
+                  slugEn: state.slugEn,
+                  slugAr: state.slugAr,
+                  i18n: state.i18n,
+                  blocks: state.blocks,
+                  ogImage: state.ogImage,
+                  noindex: state.noindex,
+                  isHome: state.isHome,
+                }}
+              />
               {LOCALES.map((loc) => (
                 <div key={loc} className="card">
                   <p className="text-xs uppercase tracking-widest text-accent mb-3">{loc}</p>
@@ -320,9 +448,24 @@ export function PageEditor({
           previewOpen && 'fixed inset-0 z-50 !flex',
         )}
       >
-        <div className="px-4 py-3 bg-ink text-bone flex items-center justify-between gap-2 text-xs">
+        <div className="px-4 py-3 bg-ink text-bone flex items-center justify-between gap-2 text-xs flex-wrap">
           <span className="uppercase tracking-widest text-bone/60">Live preview</span>
-          <div className="flex items-center gap-2 flex-wrap justify-end">
+          <div className="flex items-center gap-1 flex-wrap justify-end">
+            <div className="flex border border-bone/15 mr-2">
+              {(['mobile', 'tablet', 'desktop'] as Device[]).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDevice(d)}
+                  className={clsx(
+                    'px-2 py-1 uppercase tracking-widest text-[10px] border-r border-bone/15 last:border-r-0',
+                    device === d ? 'bg-accent text-ink' : 'hover:bg-ink-50',
+                  )}
+                  title={`${d} — ${DEVICE_WIDTH[d]}`}
+                >
+                  {d === 'mobile' ? '▯' : d === 'tablet' ? '▭' : '▭▭'}
+                </button>
+              ))}
+            </div>
             {LOCALES.map((l) => (
               <button
                 key={l}
@@ -351,12 +494,15 @@ export function PageEditor({
             </button>
           </div>
         </div>
-        <iframe
-          key={previewUrl}
-          src={previewUrl}
-          className="flex-1 w-full bg-ink"
-          title="Page preview"
-        />
+        <div className="flex-1 bg-ink-100 overflow-auto flex justify-center">
+          <iframe
+            key={previewUrl}
+            src={previewUrl}
+            className="h-full bg-ink transition-[width] duration-200"
+            style={{ width: DEVICE_WIDTH[device], maxWidth: '100%' }}
+            title="Page preview"
+          />
+        </div>
       </div>
     </div>
   );
