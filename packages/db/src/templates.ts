@@ -24,6 +24,23 @@ function id(): string {
 
 const emptyLoc = () => ({ en: '', ar: '' });
 
+// Stable, seeded placeholder photos. Using picsum.photos with a `seed`
+// keeps the same image every render (no flicker) while still feeling
+// "real" — admins immediately see a populated, magazine-style page
+// instead of broken-image squares.
+const photo = (seed: string, w = 1600, h = 1100) =>
+  `https://picsum.photos/seed/${encodeURIComponent(seed)}/${w}/${h}`;
+
+const galleryImages = (
+  prefix: string,
+  count: number,
+  alts: { en: string; ar: string }[],
+) =>
+  Array.from({ length: count }).map((_, i) => ({
+    src: photo(`${prefix}-${i + 1}`, 1200, 1500),
+    alt: alts[i % alts.length],
+  }));
+
 export type StarterTemplate = {
   key: string;
   name: string;
@@ -64,13 +81,27 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         align: 'left',
         style: { maxWidth: 'narrow' },
       },
-      { id: id(), type: 'image', src: '', alt: { en: 'Full-bleed editorial photograph', ar: 'صورة تحريرية ممتدة' }, caption: emptyLoc(), width: 'full' },
+      {
+        id: id(),
+        type: 'image',
+        src: photo('editorial-cover', 2000, 1100),
+        alt: { en: 'Full-bleed editorial photograph', ar: 'صورة تحريرية ممتدة' },
+        caption: { en: 'Cover image — Issue 01, shot on medium format.', ar: 'صورة الغلاف — العدد 01، تصوير متوسط الحجم.' },
+        width: 'full',
+      },
       {
         id: id(),
         type: 'gallery',
         heading: { en: 'Selected spreads', ar: 'صفحات مختارة' },
         columns: 3,
-        images: [],
+        images: galleryImages('editorial-spreads', 6, [
+          { en: 'Cover spread', ar: 'صفحة الغلاف' },
+          { en: 'Feature opening', ar: 'افتتاحية المقال' },
+          { en: 'Typographic study', ar: 'دراسة طباعية' },
+          { en: 'Portrait series', ar: 'سلسلة بورتريه' },
+          { en: 'Index page', ar: 'صفحة الفهرس' },
+          { en: 'Closing spread', ar: 'الصفحة الختامية' },
+        ]),
       },
       {
         id: id(),
@@ -107,6 +138,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         eyebrow: { en: '@studio', ar: '@studio' },
         heading: { en: 'Visual power,\nin every frame.', ar: 'قوة بصرية،\nفي كل إطار.' },
         subheading: { en: 'A creative studio building brand identity, photography, podcast, and motion.', ar: 'ستوديو إبداعي يبني الهويات، التصوير، البودكاست، والموشن.' },
+        image: photo('studio-hero', 2200, 1400),
         cta: { label: { en: 'See the work', ar: 'شاهد الأعمال' }, href: '/projects' },
       },
       {
@@ -152,9 +184,31 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         style: { paddingY: 0.7 },
       },
       { id: id(), type: 'projects', limit: 4, featuredOnly: true },
-      { id: id(), type: 'image', src: '', alt: { en: 'Feature photograph', ar: 'صورة رئيسية' }, caption: emptyLoc(), width: 'full' },
+      {
+        id: id(),
+        type: 'image',
+        src: photo('visual-feature', 2200, 1300),
+        alt: { en: 'Feature photograph', ar: 'صورة رئيسية' },
+        caption: { en: 'Feature — selected from the 2026 series.', ar: 'مختارة — من سلسلة 2026.' },
+        width: 'full',
+      },
       { id: id(), type: 'marquee', words: { en: 'Photography · Direction · Print · Brand · Editorial', ar: 'تصوير · توجيه · طباعة · هوية · تحرير' } },
-      { id: id(), type: 'gallery', columns: 3, images: [] },
+      {
+        id: id(),
+        type: 'gallery',
+        columns: 3,
+        images: galleryImages('visual-grid', 9, [
+          { en: 'Studio still life', ar: 'حياة ساكنة' },
+          { en: 'Portrait, daylight', ar: 'بورتريه نهاري' },
+          { en: 'Texture study', ar: 'دراسة ملمس' },
+          { en: 'Architectural detail', ar: 'تفصيل معماري' },
+          { en: 'On set, day two', ar: 'في الموقع، اليوم الثاني' },
+          { en: 'Color study', ar: 'دراسة لونية' },
+          { en: 'Print mock-up', ar: 'نموذج طباعة' },
+          { en: 'Wardrobe test', ar: 'اختبار الأزياء' },
+          { en: 'Final selection', ar: 'الاختيار النهائي' },
+        ]),
+      },
       { id: id(), type: 'projects', heading: { en: 'More', ar: 'المزيد' }, limit: 6 },
       {
         id: id(),
@@ -179,9 +233,10 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         id: id(),
         type: 'hero',
         variant: 'split',
-        eyebrow: { en: 'Case study', ar: 'دراسة حالة' },
-        heading: { en: 'Brand name', ar: 'اسم العلامة' },
-        subheading: { en: 'A short, sharp line about what was at stake and what changed.', ar: 'جملة قصيرة وحادّة عن المطلوب وما تغيّر.' },
+        eyebrow: { en: 'Case study · 2026', ar: 'دراسة حالة · 2026' },
+        heading: { en: 'Maison Aïda', ar: 'ميزون عايدة' },
+        subheading: { en: 'Reintroducing a 40-year-old patisserie to a new generation — without losing the families that built it.', ar: 'إعادة تقديم محلّ حلويات عمره 40 عاماً إلى جيل جديد — دون خسارة العائلات التي بنته.' },
+        image: photo('case-hero', 2000, 1300),
       },
       {
         id: id(),
@@ -193,7 +248,20 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         },
         style: { maxWidth: 'narrow' },
       },
-      { id: id(), type: 'gallery', heading: { en: 'The work', ar: 'العمل' }, columns: 3, images: [] },
+      {
+        id: id(),
+        type: 'gallery',
+        heading: { en: 'The work', ar: 'العمل' },
+        columns: 3,
+        images: galleryImages('case-work', 6, [
+          { en: 'Logomark exploration', ar: 'استكشاف الشعار' },
+          { en: 'Packaging system', ar: 'منظومة التغليف' },
+          { en: 'In-store signage', ar: 'لافتات المحل' },
+          { en: 'Print campaign', ar: 'حملة مطبوعة' },
+          { en: 'Storefront after', ar: 'الواجهة بعد' },
+          { en: 'Pattern library', ar: 'مكتبة الأنماط' },
+        ]),
+      },
       {
         id: id(),
         type: 'stats',
@@ -204,7 +272,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
           { value: '5', label: { en: 'Award nominations', ar: 'ترشيحات لجوائز' } },
         ],
       },
-      { id: id(), type: 'video', url: '', caption: { en: 'Brand film', ar: 'فيلم الهوية' } },
+      {
+        id: id(),
+        type: 'video',
+        url: 'https://vimeo.com/76979871',
+        poster: photo('case-video-poster', 1600, 900),
+        caption: { en: 'Brand film — 90 seconds.', ar: 'فيلم الهوية — 90 ثانية.' },
+      },
       {
         id: id(),
         type: 'text',
@@ -261,7 +335,20 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
           { value: '4', label: { en: 'Awards', ar: 'جوائز' } },
         ],
       },
-      { id: id(), type: 'gallery', heading: { en: 'In the studio', ar: 'في الستوديو' }, columns: 3, images: [] },
+      {
+        id: id(),
+        type: 'gallery',
+        heading: { en: 'In the studio', ar: 'في الستوديو' },
+        columns: 3,
+        images: galleryImages('studio-bts', 6, [
+          { en: 'The studio, morning light', ar: 'الستوديو، ضوء الصباح' },
+          { en: 'Working desk', ar: 'مكتب العمل' },
+          { en: 'Print samples on the wall', ar: 'عيّنات طباعة على الجدار' },
+          { en: 'Camera at rest', ar: 'الكاميرا في الاستراحة' },
+          { en: 'Coffee, always', ar: 'قهوة، دائماً' },
+          { en: 'After hours', ar: 'بعد ساعات العمل' },
+        ]),
+      },
       { id: id(), type: 'testimonials', heading: { en: 'Words from clients', ar: 'كلمات من العملاء' }, featuredOnly: true, limit: 3, variant: 'cards' },
       {
         id: id(),
@@ -300,7 +387,14 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         },
         style: { maxWidth: 'narrow' },
       },
-      { id: id(), type: 'image', src: '', alt: emptyLoc(), caption: { en: 'A first image — sets the visual tone.', ar: 'صورة أولى — تضبط الإيقاع البصري.' }, width: 'wide' },
+      {
+        id: id(),
+        type: 'image',
+        src: photo('longform-open', 1800, 1100),
+        alt: { en: 'Opening image of the story', ar: 'صورة افتتاح القصة' },
+        caption: { en: 'A first image — sets the visual tone.', ar: 'صورة أولى — تضبط الإيقاع البصري.' },
+        width: 'wide',
+      },
       {
         id: id(),
         type: 'text',
@@ -310,7 +404,14 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         },
         style: { maxWidth: 'narrow' },
       },
-      { id: id(), type: 'image', src: '', alt: emptyLoc(), caption: emptyLoc(), width: 'full' },
+      {
+        id: id(),
+        type: 'image',
+        src: photo('longform-midfull', 2400, 1300),
+        alt: { en: 'Full-bleed second image', ar: 'صورة ثانية ممتدة' },
+        caption: { en: 'Midway image — give the reader a place to breathe.', ar: 'صورة وسطى — اترك للقارئ فسحة.' },
+        width: 'full',
+      },
       {
         id: id(),
         type: 'text',

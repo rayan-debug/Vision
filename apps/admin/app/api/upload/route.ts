@@ -10,8 +10,11 @@ import { logActivity } from '@/lib/activity';
 // to the public web app's /public/uploads so they're served from the same
 // origin as the live site. Images are auto-resized (max 2400px wide) and
 // re-encoded for size unless they're SVG/GIF.
-const MAX_SIZE = 10 * 1024 * 1024;
-const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif'];
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
+const ALLOWED_IMAGE = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif'];
+const ALLOWED_VIDEO = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+const ALLOWED = [...ALLOWED_IMAGE, ...ALLOWED_VIDEO];
 const COMPRESSIBLE = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
 const MAX_WIDTH = 2400;
 const COMPRESS_ABOVE = 200 * 1024; // skip optimization for small files
@@ -93,8 +96,11 @@ export async function POST(req: Request) {
   const files = fd.getAll('files').filter((x): x is File => x instanceof File);
   const uploaded = [];
   for (const file of files) {
-    if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: `${file.name} exceeds 10MB.` }, { status: 400 });
+    const isVideo = ALLOWED_VIDEO.includes(file.type);
+    const limit = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+    if (file.size > limit) {
+      const mb = Math.round(limit / 1024 / 1024);
+      return NextResponse.json({ error: `${file.name} exceeds ${mb}MB.` }, { status: 400 });
     }
     if (!ALLOWED.includes(file.type)) {
       return NextResponse.json({ error: `${file.name} type not allowed.` }, { status: 400 });
@@ -133,5 +139,16 @@ export async function POST(req: Request) {
 }
 
 function extFromMime(mime: string): string {
-  return ({ 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp', 'image/gif': '.gif', 'image/svg+xml': '.svg', 'image/avif': '.avif' } as Record<string, string>)[mime] ?? '';
+  return ({
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/webp': '.webp',
+    'image/gif': '.gif',
+    'image/svg+xml': '.svg',
+    'image/avif': '.avif',
+    'video/mp4': '.mp4',
+    'video/webm': '.webm',
+    'video/ogg': '.ogv',
+    'video/quicktime': '.mov',
+  } as Record<string, string>)[mime] ?? '';
 }

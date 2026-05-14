@@ -1,26 +1,30 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 
-type Media = { id: string; url: string; filename: string; alt: string | null };
+type Media = { id: string; url: string; filename: string; alt: string | null; mimeType?: string };
 
-// Reusable image input. Renders a thumbnail when a URL is set; clicking it
-// opens a modal listing the media library. Falls back to a raw text field so
-// external URLs still work.
+// Reusable media input. Renders a thumbnail when a URL is set; clicking it
+// opens a modal listing the media library (filtered by `kind`). Falls back to
+// a raw text field so external URLs still work.
 export function MediaPicker({
   value,
   onChange,
   placeholder = 'https://… or pick from media',
   aspect = 'square',
+  kind = 'image',
 }: {
   value: string;
   onChange: (url: string) => void;
   placeholder?: string;
   aspect?: 'square' | 'video' | 'tall';
+  kind?: 'image' | 'video';
 }) {
   const [open, setOpen] = useState(false);
 
   const aspectClass =
     aspect === 'video' ? 'aspect-video' : aspect === 'tall' ? 'aspect-[3/4]' : 'aspect-square';
+
+  const isVideoUrl = kind === 'video' || /\.(mp4|webm|ogv|mov)(\?|$)/i.test(value);
 
   return (
     <>
@@ -32,7 +36,11 @@ export function MediaPicker({
           title="Open media library"
         >
           {value ? (
-            <img src={value} alt="" className="w-full h-full object-cover" />
+            isVideoUrl ? (
+              <video src={value} muted playsInline preload="metadata" className="w-full h-full object-cover" />
+            ) : (
+              <img src={value} alt="" className="w-full h-full object-cover" />
+            )
           ) : (
             <span className="text-xl text-muted">+</span>
           )}
@@ -54,21 +62,35 @@ export function MediaPicker({
           </button>
         )}
       </div>
-      {open && <MediaPickerModal onPick={(url) => { onChange(url); setOpen(false); }} onClose={() => setOpen(false)} />}
+      {open && (
+        <MediaPickerModal
+          kind={kind}
+          onPick={(url) => { onChange(url); setOpen(false); }}
+          onClose={() => setOpen(false)}
+        />
+      )}
     </>
   );
 }
 
-function MediaPickerModal({ onPick, onClose }: { onPick: (url: string) => void; onClose: () => void }) {
+function MediaPickerModal({
+  kind,
+  onPick,
+  onClose,
+}: {
+  kind: 'image' | 'video';
+  onPick: (url: string) => void;
+  onClose: () => void;
+}) {
   const [items, setItems] = useState<Media[] | null>(null);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    fetch('/api/media')
+    fetch(`/api/media?kind=${kind}`)
       .then((r) => r.json())
       .then((j) => setItems(j.items ?? []))
       .catch(() => setItems([]));
-  }, []);
+  }, [kind]);
 
   const filtered = useMemo(() => {
     if (!items) return [];
@@ -111,7 +133,17 @@ function MediaPickerModal({ onPick, onClose }: { onPick: (url: string) => void; 
                   className="group border border-ink/10 hover:border-accent transition-colors text-left"
                 >
                   <div className="aspect-square overflow-hidden bg-surface-100">
-                    <img src={m.url} alt={m.alt ?? ''} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    {m.mimeType?.startsWith('video/') ? (
+                      <video
+                        src={m.url}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <img src={m.url} alt={m.alt ?? ''} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    )}
                   </div>
                   <p className="p-1.5 text-[10px] truncate font-mono text-muted">{m.filename}</p>
                 </button>

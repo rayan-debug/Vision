@@ -884,22 +884,24 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (b: Block) =
     case 'video':
       return (
         <>
-          <label className="block">
-            <span className="label">Video URL (YouTube / Vimeo / .mp4)</span>
-            <input
-              className="input font-mono text-xs"
+          <div className="block">
+            <span className="label">Video — paste a YouTube/Vimeo URL or pick an uploaded video</span>
+            <MediaPicker
+              kind="video"
+              aspect="video"
               value={block.url}
-              onChange={(e) => onChange({ ...block, url: e.target.value })}
+              onChange={(url) => onChange({ ...block, url })}
+              placeholder="https://youtu.be/… or /uploads/clip.mp4"
             />
-          </label>
-          <label className="block">
-            <span className="label">Poster image URL (for .mp4)</span>
-            <input
-              className="input font-mono text-xs"
+          </div>
+          <div className="block">
+            <span className="label">Poster image (shown before the video plays)</span>
+            <MediaPicker
+              aspect="video"
               value={block.poster ?? ''}
-              onChange={(e) => onChange({ ...block, poster: e.target.value })}
+              onChange={(url) => onChange({ ...block, poster: url })}
             />
-          </label>
+          </div>
           <LocalizedField
             label="Caption"
             value={block.caption ?? { en: '', ar: '' }}
