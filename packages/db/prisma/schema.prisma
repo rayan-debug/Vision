@@ -132,6 +132,14 @@ model SiteSettings {
   tiktok       String?
   pinterest    String?
   logoUrl      String?
+  // Logo presentation. logoHeight is in CSS pixels (web header renders at this
+  // height, scaling width automatically). logoPosition is 'left' or 'center'.
+  // logoShape clips the logo: 'none' | 'rounded' | 'circle'. logoShowText
+  // toggles the site-name wordmark next to the logo image.
+  logoHeight   Int      @default(28)
+  logoPosition String   @default("left")
+  logoShape    String   @default("none")
+  logoShowText Boolean  @default(true)
   faviconUrl   String?
   primaryColor String   @default("#0a0a0a")
   accentColor  String   @default("#ff4d1a")

@@ -30,6 +30,8 @@ const NULLABLE_STRING_FIELDS = [
 ] as const;
 
 const VALID_LETTER_SPACING = new Set(['tight', 'normal', 'loose']);
+const VALID_LOGO_POSITION = new Set(['left', 'center']);
+const VALID_LOGO_SHAPE = new Set(['none', 'rounded', 'circle']);
 
 export async function PATCH(req: Request) {
   const session = await requireSession();
@@ -49,6 +51,18 @@ export async function PATCH(req: Request) {
   }
   if (typeof body.letterSpacing === 'string' && VALID_LETTER_SPACING.has(body.letterSpacing)) {
     data.letterSpacing = body.letterSpacing;
+  }
+  if (typeof body.logoHeight === 'number' && body.logoHeight >= 12 && body.logoHeight <= 96) {
+    data.logoHeight = Math.round(body.logoHeight);
+  }
+  if (typeof body.logoPosition === 'string' && VALID_LOGO_POSITION.has(body.logoPosition)) {
+    data.logoPosition = body.logoPosition;
+  }
+  if (typeof body.logoShape === 'string' && VALID_LOGO_SHAPE.has(body.logoShape)) {
+    data.logoShape = body.logoShape;
+  }
+  if (typeof body.logoShowText === 'boolean') {
+    data.logoShowText = body.logoShowText;
   }
   if (body.i18n !== undefined) data.i18n = body.i18n;
   if (body.navLabels !== undefined) data.navLabels = body.navLabels;

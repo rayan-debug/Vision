@@ -422,7 +422,13 @@ export function PageEditor({
 
         <footer className="sticky bottom-0 px-4 md:px-6 py-3 md:py-4 border-t border-ink/10 bg-surface flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs text-muted">
-            {dirty ? 'Unsaved changes' : `Saved ${new Date(state.updatedAt).toLocaleTimeString()}`}
+            {dirty ? (
+              'Unsaved changes'
+            ) : (
+              <span suppressHydrationWarning>
+                Saved {new Date(state.updatedAt).toLocaleTimeString()}
+              </span>
+            )}
             {error && <span className="ml-2 text-red-700">· {error}</span>}
           </div>
           <div className="flex gap-2 ml-auto">

@@ -21,6 +21,10 @@ type Settings = {
   tiktok: string | null;
   pinterest: string | null;
   logoUrl: string | null;
+  logoHeight: number;
+  logoPosition: string;
+  logoShape: string;
+  logoShowText: boolean;
   faviconUrl: string | null;
   defaultOgImage: string | null;
   primaryColor: string;
@@ -41,7 +45,7 @@ type Settings = {
   faqs: { q: Record<string, string>; a: Record<string, string> }[];
 };
 
-type Tab = 'brand' | 'theme' | 'typography' | 'contact' | 'navigation' | 'seo' | 'analytics' | 'advanced' | 'faqs';
+type Tab = 'brand' | 'theme' | 'typography' | 'contact' | 'navigation' | 'logo' | 'seo' | 'analytics' | 'advanced' | 'faqs';
 
 const TABS: { id: Tab; label: string; hint: string }[] = [
   { id: 'brand', label: 'Brand', hint: 'Name, tagline, bio' },
@@ -49,7 +53,8 @@ const TABS: { id: Tab; label: string; hint: string }[] = [
   { id: 'typography', label: 'Typography', hint: 'Fonts, sizes, spacing' },
   { id: 'contact', label: 'Contact & social', hint: 'Email, phone, links' },
   { id: 'navigation', label: 'Navigation', hint: 'Menu labels per language' },
-  { id: 'seo', label: 'SEO & assets', hint: 'Logo, favicon, OG image' },
+  { id: 'logo', label: 'Logo', hint: 'Upload, size, place, preview' },
+  { id: 'seo', label: 'SEO & assets', hint: 'Favicon, OG image' },
   { id: 'analytics', label: 'Analytics', hint: 'GA, Plausible' },
   { id: 'advanced', label: 'Advanced', hint: 'Custom CSS' },
   { id: 'faqs', label: 'FAQs (AEO)', hint: 'Schema.org Q&A' },
@@ -503,21 +508,106 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
           </section>
         )}
 
+        {tab === 'logo' && (
+          <section className="card">
+            <h2 className="font-display text-xl mb-1">Logo</h2>
+            <p className="text-xs text-muted mb-5">
+              Upload a custom logo, control its size, shape, and placement in the header. The preview below mirrors how it will render on the public site.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="block">
+                <span className="label">Logo image</span>
+                <MediaPicker
+                  value={s.logoUrl ?? ''}
+                  onChange={(url) => u('logoUrl', url || null)}
+                  aspect="square"
+                />
+                <span className="text-[10px] text-muted mt-1 block">
+                  PNG or SVG, transparent background recommended. Min 256×256.
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <label className="block">
+                  <span className="label">Height ({s.logoHeight}px)</span>
+                  <input
+                    type="range"
+                    min="16"
+                    max="80"
+                    step="1"
+                    value={s.logoHeight}
+                    onChange={(e) => u('logoHeight', Number(e.target.value))}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-[10px] text-muted">
+                    <span>16</span><span>48</span><span>80</span>
+                  </div>
+                </label>
+
+                <label className="block">
+                  <span className="label">Placement</span>
+                  <select
+                    className="select"
+                    value={s.logoPosition}
+                    onChange={(e) => u('logoPosition', e.target.value)}
+                  >
+                    <option value="left">Left (with nav on right)</option>
+                    <option value="center">Centered above nav</option>
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="label">Shape mask</span>
+                  <select
+                    className="select"
+                    value={s.logoShape}
+                    onChange={(e) => u('logoShape', e.target.value)}
+                  >
+                    <option value="none">None (as-is)</option>
+                    <option value="rounded">Rounded corners</option>
+                    <option value="circle">Circle</option>
+                  </select>
+                </label>
+
+                <label className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    checked={s.logoShowText}
+                    onChange={(e) => u('logoShowText', e.target.checked)}
+                  />
+                  <span className="text-sm">Show site name next to logo</span>
+                </label>
+              </div>
+            </div>
+
+            <p className="label">Header preview</p>
+            <HeaderPreview
+              logoUrl={s.logoUrl}
+              logoHeight={s.logoHeight}
+              logoPosition={s.logoPosition}
+              logoShape={s.logoShape}
+              logoShowText={s.logoShowText}
+              siteName={s.i18n.en?.siteName || 'The Vision'}
+              accent={s.accentColor}
+              ink={s.primaryColor}
+              displayFont={s.displayFont}
+            />
+            <p className="text-[10px] text-muted mt-2">
+              Live mirror of the public site header. Save to apply changes.
+            </p>
+          </section>
+        )}
+
         {tab === 'seo' && (
           <section className="card">
-            <h2 className="font-display text-xl mb-1">SEO & brand assets</h2>
+            <h2 className="font-display text-xl mb-1">SEO assets</h2>
             <p className="text-xs text-muted mb-4">
-              The logo shows in the header. Favicon is the browser tab icon. The OG image is the preview used when someone shares any page on social media.
+              Favicon is the browser tab icon. The OG image is the preview shown when someone shares a page on social media. (Logo lives in its own tab.)
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-              <div className="block">
-                <span className="label">Logo</span>
-                <MediaPicker value={s.logoUrl ?? ''} onChange={(url) => u('logoUrl', url || null)} aspect="square" />
-              </div>
-              <div className="block">
-                <span className="label">Favicon</span>
-                <MediaPicker value={s.faviconUrl ?? ''} onChange={(url) => u('faviconUrl', url || null)} aspect="square" />
-              </div>
+            <div className="block mb-3">
+              <span className="label">Favicon</span>
+              <MediaPicker value={s.faviconUrl ?? ''} onChange={(url) => u('faviconUrl', url || null)} aspect="square" />
             </div>
             <div className="block">
               <span className="label">Default OG image (used by pages without their own)</span>
@@ -678,6 +768,113 @@ export function SettingsEditor({ initial }: { initial: Settings }) {
             {busy ? 'Saving…' : 'Save settings'}
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function HeaderPreview({
+  logoUrl,
+  logoHeight,
+  logoPosition,
+  logoShape,
+  logoShowText,
+  siteName,
+  accent,
+  ink,
+  displayFont,
+}: {
+  logoUrl: string | null;
+  logoHeight: number;
+  logoPosition: string;
+  logoShape: string;
+  logoShowText: boolean;
+  siteName: string;
+  accent: string;
+  ink: string;
+  displayFont: string | null;
+}) {
+  const radius =
+    logoShape === 'circle' ? '9999px' : logoShape === 'rounded' ? '6px' : '0';
+  const fontFamily = displayFont ? `'${displayFont}', serif` : "'Playfair Display', serif";
+  const centered = logoPosition === 'center';
+
+  const logoNode = logoUrl ? (
+    <img
+      src={logoUrl}
+      alt=""
+      style={{
+        height: `${logoHeight}px`,
+        width: 'auto',
+        borderRadius: radius,
+        objectFit: 'contain',
+      }}
+    />
+  ) : (
+    <svg
+      width={logoHeight}
+      height={logoHeight}
+      viewBox="0 0 24 24"
+      fill="none"
+      style={{ color: accent }}
+    >
+      <path
+        d="M3 13C8 12 11 9 12 4C13 9 16 12 21 13C16 14 13 17 12 22C11 17 8 14 3 13Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+
+  const brandCluster = (
+    <div className="flex items-center gap-2">
+      {logoNode}
+      {logoShowText && (
+        <span
+          style={{ fontFamily }}
+          className="text-lg tracking-tight"
+        >
+          {siteName}
+        </span>
+      )}
+    </div>
+  );
+
+  return (
+    <div
+      className="border border-ink/10 overflow-hidden"
+      style={{ background: ink, color: '#f5f1ea' }}
+    >
+      <div className="px-6 py-5">
+        {centered ? (
+          <div className="flex flex-col items-center gap-3">
+            {brandCluster}
+            <nav className="flex items-center gap-6 text-[11px] uppercase tracking-widest opacity-80">
+              <span>Work</span>
+              <span>About</span>
+              <span>Contact</span>
+              <span style={{ color: accent }}>EN / AR</span>
+            </nav>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between gap-6">
+            {brandCluster}
+            <nav className="flex items-center gap-6 text-[11px] uppercase tracking-widest opacity-80">
+              <span>Work</span>
+              <span>About</span>
+              <span>Contact</span>
+              <span style={{ color: accent }}>EN / AR</span>
+            </nav>
+          </div>
+        )}
+      </div>
+      <div className="px-6 py-8 border-t border-white/10">
+        <span className="text-[10px] uppercase tracking-widest opacity-50">page content</span>
+        <p
+          className="mt-2 text-2xl leading-tight"
+          style={{ fontFamily }}
+        >
+          Visual power, in every frame.
+        </p>
       </div>
     </div>
   );
