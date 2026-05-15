@@ -447,6 +447,20 @@ function StyleOverrideEditor({
           <option value="desktop">Hide on desktop</option>
         </select>
       </label>
+      <label className="block">
+        <span className="label">Entrance animation</span>
+        <select
+          className="select"
+          value={s.animation ?? ''}
+          onChange={(e) => set('animation', (e.target.value || undefined) as import('@roua/db').BlockStyle['animation'])}
+        >
+          <option value="">None</option>
+          <option value="fade">Fade in</option>
+          <option value="slide-up">Slide up</option>
+          <option value="slide-in">Slide in from left</option>
+          <option value="zoom">Zoom in</option>
+        </select>
+      </label>
       {Object.keys(s).length > 0 && (
         <button
           type="button"

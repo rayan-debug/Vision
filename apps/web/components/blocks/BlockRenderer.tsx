@@ -1,4 +1,5 @@
-import type { Block, Locale } from '@roua/db';
+import { Fragment } from 'react';
+import type { Block, BlockStyle, Locale } from '@roua/db';
 import { Hero } from './Hero';
 import { TextBlock } from './TextBlock';
 import { ImageBlock } from './ImageBlock';
@@ -21,41 +22,57 @@ export function BlockRenderer({ blocks, locale }: { blocks: Block[]; locale: Loc
   return (
     <>
       {blocks.map((b) => {
-        switch (b.type) {
-          case 'hero':
-            return <Hero key={b.id} block={b} locale={locale} />;
-          case 'text':
-            return <TextBlock key={b.id} block={b} locale={locale} />;
-          case 'image':
-            return <ImageBlock key={b.id} block={b} locale={locale} />;
-          case 'gallery':
-            return <Gallery key={b.id} block={b} locale={locale} />;
-          case 'projects':
-            return <Projects key={b.id} block={b} locale={locale} />;
-          case 'services':
-            return <Services key={b.id} block={b} locale={locale} />;
-          case 'faq':
-            return <FAQ key={b.id} block={b} locale={locale} />;
-          case 'contact':
-            return <Contact key={b.id} block={b} locale={locale} />;
-          case 'cta':
-            return <CTA key={b.id} block={b} locale={locale} />;
-          case 'marquee':
-            return <Marquee key={b.id} block={b} locale={locale} />;
-          case 'spacer':
-            return <Spacer key={b.id} block={b} />;
-          case 'testimonials':
-            return <Testimonials key={b.id} block={b} locale={locale} />;
-          case 'stats':
-            return <Stats key={b.id} block={b} locale={locale} />;
-          case 'video':
-            return <Video key={b.id} block={b} locale={locale} />;
-          case 'embed':
-            return <Embed key={b.id} block={b} locale={locale} />;
-          default:
-            return null;
-        }
+        const node = renderOne(b, locale);
+        if (!node) return null;
+        const style = (b as { style?: BlockStyle }).style;
+        const anim = style?.animation;
+        if (!anim || anim === 'none') return <Fragment key={b.id}>{node}</Fragment>;
+        // Wrap with a data-reveal target so the IntersectionObserver in
+        // Reveal.tsx picks it up. Variants ("fade" | "slide-up" | "slide-in"
+        // | "zoom") map to CSS in globals.css.
+        return (
+          <div key={b.id} data-reveal={anim === 'slide-up' ? '' : anim}>
+            {node}
+          </div>
+        );
       })}
     </>
   );
+}
+
+function renderOne(b: Block, locale: Locale) {
+  switch (b.type) {
+    case 'hero':
+      return <Hero block={b} locale={locale} />;
+    case 'text':
+      return <TextBlock block={b} locale={locale} />;
+    case 'image':
+      return <ImageBlock block={b} locale={locale} />;
+    case 'gallery':
+      return <Gallery block={b} locale={locale} />;
+    case 'projects':
+      return <Projects block={b} locale={locale} />;
+    case 'services':
+      return <Services block={b} locale={locale} />;
+    case 'faq':
+      return <FAQ block={b} locale={locale} />;
+    case 'contact':
+      return <Contact block={b} locale={locale} />;
+    case 'cta':
+      return <CTA block={b} locale={locale} />;
+    case 'marquee':
+      return <Marquee block={b} locale={locale} />;
+    case 'spacer':
+      return <Spacer block={b} />;
+    case 'testimonials':
+      return <Testimonials block={b} locale={locale} />;
+    case 'stats':
+      return <Stats block={b} locale={locale} />;
+    case 'video':
+      return <Video block={b} locale={locale} />;
+    case 'embed':
+      return <Embed block={b} locale={locale} />;
+    default:
+      return null;
+  }
 }

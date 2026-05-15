@@ -25,6 +25,10 @@ export type BlockStyle = {
   maxWidth?: 'narrow' | 'normal' | 'wide' | 'full';
   // Hide on small screens or large screens.
   hideOn?: 'mobile' | 'desktop';
+  // Reveal-on-scroll animation. Applied as a wrapper around the block so
+  // existing inner data-reveal targets keep working. 'none' (or unset) opts
+  // out of the wrapper entirely.
+  animation?: 'none' | 'fade' | 'slide-up' | 'slide-in' | 'zoom';
 };
 
 // ----- Page block schema -----

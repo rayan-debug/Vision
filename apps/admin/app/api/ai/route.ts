@@ -78,13 +78,27 @@ The available block types are:
 14. spacer
     { type: "spacer", size: "sm" | "md" | "lg" | "xl" }
 
+Each block may also include an optional "style" object:
+{ animation?: "none" | "fade" | "slide-up" | "slide-in" | "zoom" }
+Use these sparingly. Recommended pattern: "slide-up" on hero, alternating
+"slide-in" and "fade" through the body, "zoom" on stats / CTA. Do not set
+animation on marquee or spacer.
+
+Image handling — IMPORTANT:
+- For every image src field (hero.image, image.src, gallery.images[].src,
+  video.poster) set the URL to:
+  https://source.unsplash.com/featured/1600x1000/?<comma-separated-keywords>
+  Pick 2–4 specific keywords describing the image you'd want there
+  (e.g. "design,studio,workspace,minimal"). Keywords must be lowercase,
+  comma-separated, URL-safe. NEVER leave src empty when you want an image.
+- For video.url, leave as "" — the admin uploads or pastes a URL.
+
 Rules:
 - Open with a hero block unless the user clearly asks otherwise.
 - Close with a CTA or contact block unless told otherwise.
 - 5–9 blocks is the right length for a normal page.
-- Use real, specific copy — never lorem ipsum, never placeholder URLs.
+- Use real, specific copy — never lorem ipsum.
 - For Arabic, write idiomatic Arabic (not literal English-to-Arabic word order).
-- For images, leave src as "" — the admin fills these in later via media picker.
 - For href on CTAs/buttons, use realistic site paths like /contact, /projects.
 - Do NOT invent the "id" field on blocks — the server adds them.
 `;
@@ -103,6 +117,7 @@ function normalizeBlocks(input: unknown): Block[] {
     const r = raw as Record<string, unknown>;
     const id = randomId();
     const type = String(r.type ?? '').toLowerCase();
+    const style = pickStyle(r.style);
     switch (type) {
       case 'hero':
         out.push({
@@ -114,6 +129,7 @@ function normalizeBlocks(input: unknown): Block[] {
           subheading: localized(r.subheading),
           image: typeof r.image === 'string' ? r.image : undefined,
           cta: cta(r.cta),
+          style,
         });
         break;
       case 'text':
@@ -123,6 +139,7 @@ function normalizeBlocks(input: unknown): Block[] {
           heading: localized(r.heading),
           content: localized(r.content) ?? { en: '', ar: '' },
           align: r.align === 'center' ? 'center' : 'left',
+          style,
         });
         break;
       case 'image':
@@ -133,6 +150,7 @@ function normalizeBlocks(input: unknown): Block[] {
           alt: localized(r.alt) ?? { en: '', ar: '' },
           caption: localized(r.caption),
           width: (r.width as 'narrow' | 'wide' | 'full') ?? 'wide',
+          style,
         });
         break;
       case 'gallery':
@@ -147,6 +165,7 @@ function normalizeBlocks(input: unknown): Block[] {
                 alt: localized((g as { alt?: unknown }).alt) ?? { en: '', ar: '' },
               }))
             : [],
+          style,
         });
         break;
       case 'video':
@@ -156,6 +175,7 @@ function normalizeBlocks(input: unknown): Block[] {
           url: typeof r.url === 'string' ? r.url : '',
           caption: localized(r.caption),
           poster: typeof r.poster === 'string' ? r.poster : undefined,
+          style,
         });
         break;
       case 'projects':
@@ -166,10 +186,11 @@ function normalizeBlocks(input: unknown): Block[] {
           limit: typeof r.limit === 'number' ? r.limit : 6,
           category: typeof r.category === 'string' ? r.category : undefined,
           featuredOnly: Boolean(r.featuredOnly),
+          style,
         });
         break;
       case 'services':
-        out.push({ id, type: 'services', heading: localized(r.heading) });
+        out.push({ id, type: 'services', heading: localized(r.heading), style });
         break;
       case 'testimonials':
         out.push({
@@ -179,6 +200,7 @@ function normalizeBlocks(input: unknown): Block[] {
           variant: (r.variant as 'cards' | 'quote-stack') ?? 'cards',
           featuredOnly: Boolean(r.featuredOnly),
           limit: typeof r.limit === 'number' ? r.limit : 3,
+          style,
         });
         break;
       case 'stats':
@@ -192,6 +214,7 @@ function normalizeBlocks(input: unknown): Block[] {
                 label: localized((s as { label?: unknown }).label) ?? { en: '', ar: '' },
               }))
             : [],
+          style,
         });
         break;
       case 'faq':
@@ -205,10 +228,11 @@ function normalizeBlocks(input: unknown): Block[] {
                 a: localized((item as { a?: unknown }).a) ?? { en: '', ar: '' },
               }))
             : [],
+          style,
         });
         break;
       case 'contact':
-        out.push({ id, type: 'contact', heading: localized(r.heading) });
+        out.push({ id, type: 'contact', heading: localized(r.heading), style });
         break;
       case 'cta': {
         const b = cta(r.button);
@@ -218,6 +242,7 @@ function normalizeBlocks(input: unknown): Block[] {
           heading: localized(r.heading) ?? { en: '', ar: '' },
           subheading: localized(r.subheading),
           button: b ?? { label: { en: 'Get in touch', ar: 'تواصل' }, href: '/contact' },
+          style,
         });
         break;
       }
@@ -226,6 +251,7 @@ function normalizeBlocks(input: unknown): Block[] {
           id,
           type: 'marquee',
           words: localized(r.words) ?? { en: '', ar: '' },
+          style,
         });
         break;
       case 'spacer':
@@ -233,6 +259,7 @@ function normalizeBlocks(input: unknown): Block[] {
           id,
           type: 'spacer',
           size: (r.size as 'sm' | 'md' | 'lg' | 'xl') ?? 'md',
+          style,
         });
         break;
       default:
@@ -250,6 +277,18 @@ function localized(v: unknown): { en: string; ar: string } | undefined {
     en: typeof o.en === 'string' ? o.en : '',
     ar: typeof o.ar === 'string' ? o.ar : '',
   };
+}
+
+const VALID_ANIMATION = new Set(['none', 'fade', 'slide-up', 'slide-in', 'zoom']);
+
+function pickStyle(v: unknown): import('@roua/db').BlockStyle | undefined {
+  if (!v || typeof v !== 'object') return undefined;
+  const o = v as Record<string, unknown>;
+  const out: import('@roua/db').BlockStyle = {};
+  if (typeof o.animation === 'string' && VALID_ANIMATION.has(o.animation)) {
+    out.animation = o.animation as import('@roua/db').BlockStyle['animation'];
+  }
+  return Object.keys(out).length ? out : undefined;
 }
 
 function cta(v: unknown): { label: { en: string; ar: string }; href: string } | undefined {

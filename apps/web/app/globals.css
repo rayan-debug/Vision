@@ -97,7 +97,10 @@ body {
   transform-origin: left;
 }
 
-/* Reveal on scroll — picked up by the IntersectionObserver helper */
+/* Reveal on scroll — picked up by the IntersectionObserver helper.
+   Default behaviour: slide-up + fade. Variants set via attribute value
+   ("fade", "slide-up", "slide-in", "zoom") let the block editor / AI pick
+   a per-block entrance animation. */
 [data-reveal] {
   opacity: 0;
   transform: translateY(28px);
@@ -106,6 +109,32 @@ body {
 [data-reveal].in {
   opacity: 1;
   transform: translateY(0);
+}
+[data-reveal="fade"] {
+  transform: none;
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal="fade"].in {
+  transform: none;
+}
+[data-reveal="slide-in"] {
+  transform: translateX(-40px);
+}
+[data-reveal="slide-in"].in {
+  transform: translateX(0);
+}
+[data-reveal="zoom"] {
+  transform: scale(0.96);
+}
+[data-reveal="zoom"].in {
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* Project card hover */
