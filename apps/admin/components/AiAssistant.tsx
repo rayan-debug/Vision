@@ -1,31 +1,15 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import clsx from 'clsx';
-import type {
-  Block,
-  HeroBlock,
-  TextBlock as TextBlockT,
-  ImageBlock as ImageBlockT,
-  GalleryBlock,
-  StatsBlock,
-  TestimonialsBlock,
-  CtaBlock,
-  MarqueeBlock,
-  FaqBlock,
-  ProjectsBlock,
-  ServicesBlock,
-  ContactBlock,
-  VideoBlock,
-  SpacerBlock,
-  Locale,
-} from '@roua/db';
+import type { Block, Locale } from '@roua/db';
+import { BlockHtmlPreview } from './BlockHtmlPreview';
 
 type Tab = 'generate' | 'improve' | 'translate' | 'tagline' | 'alt';
 
 const TABS: { id: Tab; label: string; desc: string }[] = [
   { id: 'generate', label: 'Generate page', desc: 'Build a full page from a brief' },
   { id: 'improve', label: 'Improve text', desc: 'Tighten, polish, or restyle copy' },
-  { id: 'translate', label: 'Translate', desc: 'EN ↔ AR with on-brand tone' },
+  { id: 'translate', label: 'Translate', desc: 'EN â†” AR with on-brand tone' },
   { id: 'tagline', label: 'Taglines', desc: 'Short brand lines from name + bio' },
   { id: 'alt', label: 'Alt text', desc: 'Accessibility captions for images' },
 ];
@@ -65,7 +49,7 @@ export function AiAssistant({ onAppendBlocks, onReplaceBlocks, pageTitle }: Prop
               <div className="flex-1 min-w-0">
                 <h2 className="font-display text-lg leading-none">AI assistant</h2>
                 <p className="text-[10px] text-muted uppercase tracking-widest mt-1">
-                  Claude · opus 4.7
+                  Claude Â· opus 4.7
                 </p>
               </div>
               <button onClick={() => setOpen(false)} className="btn-ghost text-xs">Close</button>
@@ -107,9 +91,9 @@ export function AiAssistant({ onAppendBlocks, onReplaceBlocks, pageTitle }: Prop
   );
 }
 
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Generate page
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function GeneratePagePanel({
   pageTitle,
@@ -155,19 +139,19 @@ function GeneratePagePanel({
       <textarea
         className="textarea"
         rows={6}
-        placeholder="e.g. A studio about page for Roua Bou Ghanem — a Beirut-based graphic designer who works on identity, editorial, and photography. Confident editorial tone."
+        placeholder="e.g. A studio about page for Roua Bou Ghanem â€” a Beirut-based graphic designer who works on identity, editorial, and photography. Confident editorial tone."
         value={brief}
         onChange={(e) => setBrief(e.target.value)}
       />
       <button onClick={run} disabled={busy || !brief.trim()} className="btn-accent w-full">
-        {busy ? 'Thinking…' : 'Generate →'}
+        {busy ? 'Thinkingâ€¦' : 'Generate â†’'}
       </button>
       {error && <p className="text-sm text-red-700">{error}</p>}
       {preview && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-xs uppercase tracking-widest text-muted">
-              {preview.length} blocks · live preview
+              {preview.length} blocks Â· live preview
             </p>
             <button
               onClick={() => setPreview(null)}
@@ -179,7 +163,7 @@ function GeneratePagePanel({
           </div>
           <div className="border border-ink/10 rounded overflow-hidden bg-ink">
             <div className="max-h-[420px] overflow-y-auto">
-              <BlockPreviewList blocks={preview} />
+              <BlockHtmlPreview blocks={preview} />
             </div>
           </div>
           <div className="flex gap-2 pt-1">
@@ -213,9 +197,9 @@ function GeneratePagePanel({
   );
 }
 
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Improve copy
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function ImproveCopyPanel() {
   const [text, setText] = useState('');
@@ -276,7 +260,7 @@ function ImproveCopyPanel() {
         />
       </label>
       <button onClick={run} disabled={busy || !text.trim()} className="btn-accent w-full">
-        {busy ? 'Thinking…' : 'Improve →'}
+        {busy ? 'Thinkingâ€¦' : 'Improve â†’'}
       </button>
       {error && <p className="text-sm text-red-700">{error}</p>}
       {result !== null && (
@@ -291,7 +275,7 @@ function ImproveCopyPanel() {
             }}
             className="mt-2 btn-outline text-xs"
           >
-            {copied ? '✓ Copied' : 'Copy to clipboard'}
+            {copied ? 'âœ“ Copied' : 'Copy to clipboard'}
           </button>
         </div>
       )}
@@ -299,9 +283,9 @@ function ImproveCopyPanel() {
   );
 }
 
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Translate
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TranslatePanel() {
   const [text, setText] = useState('');
@@ -339,7 +323,7 @@ function TranslatePanel() {
           <option value="en">English</option>
           <option value="ar">Arabic</option>
         </select>
-        <span className="text-muted">→</span>
+        <span className="text-muted">â†’</span>
         <select className="select" value={to} disabled>
           <option value="en">English</option>
           <option value="ar">Arabic</option>
@@ -353,7 +337,7 @@ function TranslatePanel() {
         onChange={(e) => setText(e.target.value)}
       />
       <button onClick={run} disabled={busy || !text.trim()} className="btn-accent w-full">
-        {busy ? 'Translating…' : 'Translate →'}
+        {busy ? 'Translatingâ€¦' : 'Translate â†’'}
       </button>
       {error && <p className="text-sm text-red-700">{error}</p>}
       {result !== null && (
@@ -368,7 +352,7 @@ function TranslatePanel() {
             }}
             className="mt-2 btn-outline text-xs"
           >
-            {copied ? '✓ Copied' : 'Copy to clipboard'}
+            {copied ? 'âœ“ Copied' : 'Copy to clipboard'}
           </button>
         </div>
       )}
@@ -376,9 +360,9 @@ function TranslatePanel() {
   );
 }
 
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Taglines
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TaglinePanel() {
   const [siteName, setSiteName] = useState('');
@@ -439,7 +423,7 @@ function TaglinePanel() {
         </label>
       </div>
       <button onClick={run} disabled={busy || !siteName.trim()} className="btn-accent w-full">
-        {busy ? 'Thinking…' : 'Generate →'}
+        {busy ? 'Thinkingâ€¦' : 'Generate â†’'}
       </button>
       {error && <p className="text-sm text-red-700">{error}</p>}
       {results && (
@@ -452,7 +436,7 @@ function TaglinePanel() {
                 className="btn-ghost text-xs"
                 title="Copy"
               >
-                ⎘
+                âŽ˜
               </button>
             </li>
           ))}
@@ -462,9 +446,9 @@ function TaglinePanel() {
   );
 }
 
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Alt text
-// ────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function AltTextPanel() {
   const [contextText, setContextText] = useState('');
@@ -515,7 +499,7 @@ function AltTextPanel() {
         </select>
       </label>
       <button onClick={run} disabled={busy || !contextText.trim()} className="btn-accent w-full">
-        {busy ? 'Thinking…' : 'Generate alt text →'}
+        {busy ? 'Thinkingâ€¦' : 'Generate alt text â†’'}
       </button>
       {error && <p className="text-sm text-red-700">{error}</p>}
       {result !== null && (
@@ -533,218 +517,6 @@ function AltTextPanel() {
   );
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// Live preview of generated blocks. A simplified mirror of the public site's
-// dark editorial style — enough to judge layout, image choice, and tone
-// before committing. Only English copy is shown here for density.
-// ────────────────────────────────────────────────────────────────────────────
-
-function BlockPreviewList({ blocks }: { blocks: Block[] }) {
-  const locale: Locale = 'en';
-  return (
-    <div className="text-bone" style={{ background: '#0a0a0a', color: '#f5f1ea' }}>
-      {blocks.map((b) => (
-        <PreviewBlock key={b.id} block={b} locale={locale} />
-      ))}
-    </div>
-  );
-}
-
-function PreviewBlock({ block, locale }: { block: Block; locale: Locale }) {
-  switch (block.type) {
-    case 'hero':         return <PreviewHero block={block as HeroBlock} locale={locale} />;
-    case 'text':         return <PreviewText block={block as TextBlockT} locale={locale} />;
-    case 'image':        return <PreviewImage block={block as ImageBlockT} locale={locale} />;
-    case 'gallery':      return <PreviewGallery block={block as GalleryBlock} locale={locale} />;
-    case 'stats':        return <PreviewStats block={block as StatsBlock} locale={locale} />;
-    case 'testimonials': return <PreviewPlaceholder label="Testimonials" sub="Pulled from your Testimonials list" block={block as TestimonialsBlock} locale={locale} />;
-    case 'cta':          return <PreviewCta block={block as CtaBlock} locale={locale} />;
-    case 'marquee':      return <PreviewMarquee block={block as MarqueeBlock} locale={locale} />;
-    case 'faq':          return <PreviewFaq block={block as FaqBlock} locale={locale} />;
-    case 'contact':      return <PreviewPlaceholder label="Contact form" sub="Inline inquiry form" block={block as ContactBlock} locale={locale} />;
-    case 'services':     return <PreviewPlaceholder label="Services" sub="Pulled from your Services list" block={block as ServicesBlock} locale={locale} />;
-    case 'projects':     return <PreviewPlaceholder label="Projects grid" sub={`${(block as ProjectsBlock).limit ?? 6} projects, ${(block as ProjectsBlock).featuredOnly ? 'featured only' : 'most recent'}`} block={block as ProjectsBlock} locale={locale} />;
-    case 'video':        return <PreviewPlaceholder label="Video" sub={(block as VideoBlock).url || 'video URL set later'} block={{}} locale={locale} />;
-    case 'spacer':       return <div style={{ height: spacerHeight((block as SpacerBlock).size) }} />;
-    default:             return null;
-  }
-}
-
-function spacerHeight(size: 'sm' | 'md' | 'lg' | 'xl'): number {
-  return { sm: 16, md: 32, lg: 56, xl: 88 }[size] ?? 32;
-}
-
-function pickLocalized(v: { en: string; ar: string } | undefined, locale: Locale): string {
-  if (!v) return '';
-  return v[locale] || v.en || '';
-}
-
-function PreviewHero({ block, locale }: { block: HeroBlock; locale: Locale }) {
-  const heading = pickLocalized(block.heading, locale);
-  const sub = pickLocalized(block.subheading, locale);
-  const eyebrow = pickLocalized(block.eyebrow, locale);
-  return (
-    <section className="relative px-5 py-8" style={{ background: block.image ? 'transparent' : '#0a0a0a' }}>
-      {block.image && (
-        <img
-          src={block.image}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover opacity-50"
-          loading="lazy"
-        />
-      )}
-      <div className="relative">
-        {eyebrow && <p className="text-[10px] uppercase tracking-[0.3em] text-accent mb-2">{eyebrow}</p>}
-        <h3 className="font-display text-2xl leading-tight">{heading || 'Hero heading'}</h3>
-        {sub && <p className="mt-2 text-sm opacity-70 max-w-[36ch]">{sub}</p>}
-        {block.cta && (
-          <span className="inline-block mt-3 px-3 py-1.5 text-[11px] uppercase tracking-widest border border-bone/30">
-            {pickLocalized(block.cta.label, locale) || 'Learn more'}
-          </span>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function PreviewText({ block, locale }: { block: TextBlockT; locale: Locale }) {
-  return (
-    <section className="px-5 py-6 border-t border-white/5" style={{ textAlign: block.align ?? 'left' }}>
-      {block.heading && (
-        <h3 className="font-display text-lg mb-2">{pickLocalized(block.heading, locale)}</h3>
-      )}
-      <p className="text-sm opacity-80 leading-relaxed whitespace-pre-wrap">
-        {pickLocalized(block.content, locale)}
-      </p>
-    </section>
-  );
-}
-
-function PreviewImage({ block, locale }: { block: ImageBlockT; locale: Locale }) {
-  return (
-    <section className="px-5 py-5 border-t border-white/5">
-      {block.src ? (
-        <img src={block.src} alt={pickLocalized(block.alt, locale)} className="w-full h-40 object-cover" loading="lazy" />
-      ) : (
-        <div className="w-full h-32 bg-white/5 flex items-center justify-center text-xs opacity-50">
-          (image)
-        </div>
-      )}
-      {block.caption && (
-        <p className="text-[11px] opacity-60 mt-2 italic">{pickLocalized(block.caption, locale)}</p>
-      )}
-    </section>
-  );
-}
-
-function PreviewGallery({ block, locale }: { block: GalleryBlock; locale: Locale }) {
-  const cols = block.columns ?? 3;
-  return (
-    <section className="px-5 py-5 border-t border-white/5">
-      {block.heading && (
-        <h3 className="font-display text-lg mb-3">{pickLocalized(block.heading, locale)}</h3>
-      )}
-      <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
-        {block.images.slice(0, cols * 2).map((img, i) =>
-          img.src ? (
-            <img key={i} src={img.src} alt="" className="w-full h-16 object-cover" loading="lazy" />
-          ) : (
-            <div key={i} className="w-full h-16 bg-white/5" />
-          ),
-        )}
-      </div>
-    </section>
-  );
-}
-
-function PreviewStats({ block, locale }: { block: StatsBlock; locale: Locale }) {
-  return (
-    <section className="px-5 py-6 border-t border-white/5">
-      {block.heading && (
-        <h3 className="font-display text-lg mb-3">{pickLocalized(block.heading, locale)}</h3>
-      )}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {block.items.slice(0, 4).map((it, i) => (
-          <div key={i}>
-            <p className="font-display text-2xl text-accent leading-none">{it.value}</p>
-            <p className="text-[10px] uppercase tracking-widest opacity-70 mt-1">
-              {pickLocalized(it.label, locale)}
-            </p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function PreviewCta({ block, locale }: { block: CtaBlock; locale: Locale }) {
-  return (
-    <section className="px-5 py-6 border-t border-white/5">
-      <div className="border border-bone/15 px-4 py-5 text-center">
-        <h3 className="font-display text-lg">{pickLocalized(block.heading, locale)}</h3>
-        {block.subheading && (
-          <p className="text-xs opacity-70 mt-1">{pickLocalized(block.subheading, locale)}</p>
-        )}
-        <span className="inline-block mt-3 px-3 py-1.5 text-[11px] uppercase tracking-widest bg-accent text-ink">
-          {pickLocalized(block.button.label, locale)}
-        </span>
-      </div>
-    </section>
-  );
-}
-
-function PreviewMarquee({ block, locale }: { block: MarqueeBlock; locale: Locale }) {
-  const text = pickLocalized(block.words, locale);
-  return (
-    <section className="border-y border-white/5 py-3 overflow-hidden">
-      <div className="text-sm uppercase tracking-[0.3em] whitespace-nowrap opacity-80 px-5">
-        {text} · {text} · {text}
-      </div>
-    </section>
-  );
-}
-
-function PreviewFaq({ block, locale }: { block: FaqBlock; locale: Locale }) {
-  return (
-    <section className="px-5 py-5 border-t border-white/5">
-      {block.heading && (
-        <h3 className="font-display text-lg mb-3">{pickLocalized(block.heading, locale)}</h3>
-      )}
-      <ul className="space-y-2">
-        {block.items.slice(0, 3).map((it, i) => (
-          <li key={i} className="border-b border-white/5 pb-2">
-            <p className="text-xs font-medium">Q. {pickLocalized(it.q, locale)}</p>
-            <p className="text-[11px] opacity-70 mt-1">{pickLocalized(it.a, locale).slice(0, 120)}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function PreviewPlaceholder({
-  label,
-  sub,
-  block,
-  locale,
-}: {
-  label: string;
-  sub: string;
-  block: { heading?: { en: string; ar: string } };
-  locale: Locale;
-}) {
-  return (
-    <section className="px-5 py-5 border-t border-white/5">
-      {block.heading && (
-        <h3 className="font-display text-lg mb-1">{pickLocalized(block.heading, locale)}</h3>
-      )}
-      <div className="border border-dashed border-white/10 px-3 py-4 text-center">
-        <p className="text-[10px] uppercase tracking-widest opacity-60">{label}</p>
-        <p className="text-[11px] opacity-50 mt-1">{sub}</p>
-      </div>
-    </section>
-  );
-}
 
 function SparkleIcon() {
   return (

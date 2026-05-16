@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { Block } from '@roua/db';
-import { BlockThumbnail } from './BlockThumbnail';
+import { BlockHtmlThumbnail } from './BlockHtmlPreview';
 import { AiTemplateModal } from './AiTemplateModal';
 
 type Row = {
@@ -89,11 +89,11 @@ export function TemplatesList({ initial }: { initial: Row[] }) {
             onMouseLeave={() => setHoverId(null)}
           >
             <Link href={`/templates/${t.id}`} className="block flex-1">
-              {/* Visual thumbnail replaces the ASCII preview */}
-              <div className="aspect-[4/5] overflow-hidden">
-                <BlockThumbnail blocks={t.blocks} maxBlocks={8} />
+              {/* HTML mini-page preview — looks like a real webpage, not blocks */}
+              <div className="aspect-[4/5] overflow-hidden border-b border-ink/10">
+                <BlockHtmlThumbnail blocks={t.blocks} />
               </div>
-              <div className="p-3 border-t border-ink/10">
+              <div className="p-3">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <h2 className="font-display text-lg leading-tight line-clamp-1">{t.name}</h2>
                   {t.isStarter && <span className="tag text-[9px] shrink-0">STARTER</span>}

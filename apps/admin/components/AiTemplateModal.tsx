@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Block } from '@roua/db';
-import { BlockThumbnail } from './BlockThumbnail';
+import { BlockHtmlPreview } from './BlockHtmlPreview';
 
 // Dialog for asking Claude to draft a new template. Reuses /api/ai
 // generate-page intent (templates are just block lists), then on save
@@ -12,6 +12,8 @@ export function AiTemplateModal({ onClose }: { onClose: () => void }) {
   const [brief, setBrief] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [imagery, setImagery] = useState(true);
+  const [animations, setAnimations] = useState(true);
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,10 +23,22 @@ export function AiTemplateModal({ onClose }: { onClose: () => void }) {
     setBusy(true);
     setError(null);
     setPreview(null);
+    // Prepend explicit, machine-readable directives that the AI route already
+    // understands (Unsplash image URLs + style.animation per block).
+    const directives: string[] = [];
+    if (imagery)
+      directives.push(
+        'Include real imagery. For every image src (hero, image, gallery, video poster) use https://source.unsplash.com/featured/1600x1000/?<keywords> with specific keywords.',
+      );
+    if (animations)
+      directives.push(
+        'Add reveal animations: set block.style.animation to one of "fade", "slide-up", "slide-in", "zoom". Use slide-up on hero, vary slide-in/fade through the body, zoom on stats/CTA. None on marquee/spacer.',
+      );
+    const composed = [...directives, brief.trim()].filter(Boolean).join('\n\n');
     const res = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ intent: 'generate-page', brief, title: name || undefined }),
+      body: JSON.stringify({ intent: 'generate-page', brief: composed, title: name || undefined }),
     });
     setBusy(false);
     if (!res.ok) {
@@ -107,6 +121,11 @@ export function AiTemplateModal({ onClose }: { onClose: () => void }) {
             />
           </label>
 
+          <div className="flex flex-wrap gap-2">
+            <Chip on={imagery} onClick={() => setImagery((v) => !v)} label="Include imagery" />
+            <Chip on={animations} onClick={() => setAnimations((v) => !v)} label="Add animations" />
+          </div>
+
           <button onClick={generate} disabled={busy || !brief.trim()} className="btn-accent w-full">
             {busy ? 'Generating…' : 'Generate preview →'}
           </button>
@@ -115,21 +134,16 @@ export function AiTemplateModal({ onClose }: { onClose: () => void }) {
 
           {preview && (
             <div className="border border-ink/10 bg-surface-50">
-              <header className="px-3 py-2 border-b border-ink/10 text-xs uppercase tracking-widest text-muted">
-                {preview.length} block{preview.length === 1 ? '' : 's'} preview
+              <header className="px-3 py-2 border-b border-ink/10 text-xs uppercase tracking-widest text-muted flex items-center justify-between">
+                <span>{preview.length} block{preview.length === 1 ? '' : 's'} · live HTML preview</span>
+                <span className="text-[10px] normal-case tracking-normal">
+                  {preview.some((b) => (b as { style?: { animation?: string } }).style?.animation && (b as { style?: { animation?: string } }).style?.animation !== 'none') && '✦ animated'}
+                </span>
               </header>
-              <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-3 p-3">
-                <BlockThumbnail blocks={preview} maxBlocks={12} />
-                <ol className="text-sm space-y-1 list-decimal list-inside text-muted">
-                  {preview.map((b, i) => (
-                    <li key={i}>
-                      <code className="text-ink">{b.type}</code>
-                      {(b as { heading?: { en?: string } }).heading?.en && (
-                        <span> — {(b as { heading: { en: string } }).heading.en.slice(0, 60)}</span>
-                      )}
-                    </li>
-                  ))}
-                </ol>
+              {/* Render the AI draft as the real page it will become — same
+                  component the public site uses for block rendering shape. */}
+              <div className="bg-ink max-h-[480px] overflow-y-auto">
+                <BlockHtmlPreview blocks={preview} />
               </div>
             </div>
           )}
@@ -147,5 +161,22 @@ export function AiTemplateModal({ onClose }: { onClose: () => void }) {
         )}
       </div>
     </div>
+  );
+}
+
+function Chip({ on, onClick, label }: { on: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-[11px] uppercase tracking-widest px-2.5 py-1 border transition-colors ${
+        on
+          ? 'border-accent text-ink bg-accent/10'
+          : 'border-ink/15 text-muted hover:border-ink/30 hover:text-ink'
+      }`}
+    >
+      {on ? '✓ ' : ''}
+      {label}
+    </button>
   );
 }

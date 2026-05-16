@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { BLOCK_TYPES, type Block } from '@roua/db';
 import { BlockList } from '@/components/BlockList';
+import { BlockHtmlThumbnail } from '@/components/BlockHtmlPreview';
 
 type Template = {
   id: string;
@@ -131,21 +132,17 @@ export default function NewPage() {
                     type="button"
                     onClick={() => pick(t)}
                     className={clsx(
-                      'text-left border p-3 transition-colors flex flex-col gap-2',
+                      'text-left border transition-colors flex flex-col overflow-hidden',
                       active
-                        ? 'border-accent ring-1 ring-accent bg-surface-100'
+                        ? 'border-accent ring-1 ring-accent'
                         : 'border-ink/10 hover:border-ink/30 bg-surface',
                     )}
                   >
-                    <pre
-                      className={clsx(
-                        'font-mono text-[8px] leading-[1.1] whitespace-pre overflow-hidden max-h-32',
-                        active ? 'text-accent' : 'text-muted',
-                      )}
-                    >
-                      {t.preview || '\n   (no preview)\n'}
-                    </pre>
-                    <div>
+                    {/* Real HTML mini-page preview, not block silhouettes */}
+                    <div className="aspect-[4/5] overflow-hidden border-b border-ink/10 bg-ink">
+                      <BlockHtmlThumbnail blocks={t.blocks} />
+                    </div>
+                    <div className="p-3">
                       <p className="font-medium text-sm flex items-center gap-2">
                         {t.name}
                         {t.blocks.length > 0 && (
